@@ -1,0 +1,85 @@
+.mesas-container {
+    padding: 20px;
+}
+
+.mesas-grid {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    flex-direction: row;
+    margin-top: 20px;
+}
+
+.status-message {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.status-message.success {
+    color: green;
+}
+
+.status-message.error {
+    color: red;
+}
+
+.mesa {
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 8px;
+    min-width: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    text-align: center;
+    background-color: #4C8CE4;
+    color: #333;
+    transition: transform 0.2s;
+}
+
+.mesa:hover {
+    transform: scale(1.02);
+}
+
+.mesa-title {
+    margin: 0 0 10px 0;
+    font-size: 1.2rem;
+}
+
+.mesa-id {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.mesa-actions {
+    display: flex;
+    gap: 15px;
+    flex-direction: row;
+}
+
+.mesa-button {
+    margin: 0;
+    font-size: 0.9rem;
+    background-color: #6fe44c;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.mesa-button:hover {
+    background-color: #4ce45b;
+
+}
+
+.mesa-button.eliminar {
+    background: #D06C6C;
+}
+
+.mesa-button.eliminar:hover {
+    background: #b05a5a;
+}
