@@ -21,6 +21,8 @@ function App() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [perfilCompletado, setPerfilCompletado] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [blockReason, setBlockReason] = useState("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -30,7 +32,25 @@ function App() {
           const docRef = doc(db, "usuarios", currentUser.uid);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
+            const data = docSnap.data();
             setPerfilCompletado(true);
+
+            // Blocking logic
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Normalized to start of day
+
+            if (data.estado === "inactivo") {
+              setIsBlocked(true);
+              setBlockReason("Tu cuenta ha sido desactivada por el administrador.");
+            } else if (data.fechaProximoPago && new Date(data.fechaProximoPago) < today) {
+              setIsBlocked(true);
+              setBlockReason("La fecha límite de pago ha vencido. Por favor, regulariza tu situación.");
+            } else if (data.fechaVencimiento && new Date(data.fechaVencimiento) < today) {
+              setIsBlocked(true);
+              setBlockReason("Tu suscripción ha vencido.");
+            } else {
+              setIsBlocked(false);
+            }
           } else {
             setPerfilCompletado(false);
           }
@@ -40,6 +60,7 @@ function App() {
         }
       } else {
         setPerfilCompletado(false);
+        setIsBlocked(false);
       }
       setLoading(false);
     });
@@ -47,7 +68,11 @@ function App() {
   }, []);
 
   if (loading) {
-    return <div>Cargando...</div>;
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f8f9fa' }}>
+        <p>Cargando aplicación...</p>
+      </div>
+    );
   }
 
   if (!user) {
@@ -56,6 +81,41 @@ function App() {
 
   if (!perfilCompletado) {
     return <CrearUsuario onCompletado={() => setPerfilCompletado(true)} />;
+  }
+
+  if (isBlocked) {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        textAlign: 'center',
+        padding: '20px',
+        backgroundColor: '#fff5f5',
+        color: '#c53030'
+      }}>
+        <div style={{ fontSize: '4rem', marginBottom: '20px' }}>⚠️</div>
+        <h1 style={{ fontSize: '2rem', marginBottom: '10px' }}>Cuenta Bloqueada</h1>
+        <p style={{ fontSize: '1.2rem', maxWidth: '500px' }}>{blockReason}</p>
+        <p style={{ marginTop: '20px', color: '#718096' }}>Por favor, contacta a soporte para reactivar tu cuenta.</p>
+        <button
+          onClick={() => auth.signOut()}
+          style={{
+            marginTop: '30px',
+            padding: '10px 20px',
+            backgroundColor: '#c53030',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer'
+          }}
+        >
+          Cerrar sesión
+        </button>
+      </div>
+    );
   }
 
   return (

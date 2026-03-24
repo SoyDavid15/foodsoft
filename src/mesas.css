@@ -34,7 +34,7 @@
     justify-content: center;
     gap: 1rem;
     text-align: center;
-    background-color: #4C8CE4;
+    background-color: #ffffff;
     color: #333;
     transition: transform 0.2s;
 }
@@ -53,6 +53,21 @@
     font-size: 0.9rem;
 }
 
+.mesa.con-pedidos {
+    border-color: #4C90E4;
+    box-shadow: 0 4px 12px rgba(76, 144, 228, 0.15);
+}
+
+.mesa-pedidos-count {
+    background-color: #4C90E4;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 5px 0;
+}
+
 .mesa-actions {
     display: flex;
     gap: 15px;
@@ -62,24 +77,28 @@
 .mesa-button {
     margin: 0;
     font-size: 0.9rem;
-    background-color: #6fe44c;
+    background-color: #4c90e4;
     color: #fff;
-    border: none;
+    border: 2px solid #4c90e4;
+    /* Start with a border the same as background to prevent shifting */
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.3s ease;
 }
 
 .mesa-button:hover {
-    background-color: #4ce45b;
-
+    background-color: transparent;
+    color: #4c90e4;
+    /* Text color matching the original bg */
 }
 
 .mesa-button.eliminar {
     background: #D06C6C;
+    border-color: #D06C6C;
 }
 
 .mesa-button.eliminar:hover {
-    background: #b05a5a;
+    background: transparent;
+    color: #D06C6C;
 }

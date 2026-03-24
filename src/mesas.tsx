@@ -18,13 +18,15 @@ export const mesas = ({ setView, setSelectedMesa }: Props) => {
 
     const [status, setStatus] = useState("");
     const [mesasList, setMesasList] = useState<Mesa[]>([]);
+    const [pedidosCount, setPedidosCount] = useState<{ [key: string]: number }>({});
 
     useEffect(() => {
         const user = auth.currentUser;
         if (!user) return;
 
-        const q = query(collection(db, "mesas"), where("usuarioId", "==", user.uid));
-        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        // Mesas listener
+        const qMesas = query(collection(db, "mesas"), where("usuarioId", "==", user.uid));
+        const unsubscribeMesas = onSnapshot(qMesas, (querySnapshot) => {
             const mesasArray: Mesa[] = [];
             querySnapshot.forEach((doc) => {
                 mesasArray.push({ id_doc: doc.id, id: doc.data().id, nombre: doc.data().nombre });
@@ -33,7 +35,23 @@ export const mesas = ({ setView, setSelectedMesa }: Props) => {
             setMesasList(mesasArray);
         });
 
-        return () => unsubscribe();
+        // Pedidos listener for counts
+        const qPedidos = query(collection(db, "pedidos"), where("usuarioId", "==", user.uid));
+        const unsubscribePedidos = onSnapshot(qPedidos, (querySnapshot) => {
+            const counts: { [key: string]: number } = {};
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                if (data.mesaId && data.estado !== "pagado") {
+                    counts[data.mesaId] = (counts[data.mesaId] || 0) + 1;
+                }
+            });
+            setPedidosCount(counts);
+        });
+
+        return () => {
+            unsubscribeMesas();
+            unsubscribePedidos();
+        };
     }, []);
 
     const guardarMesa = async () => {
@@ -87,16 +105,24 @@ export const mesas = ({ setView, setSelectedMesa }: Props) => {
             )}
 
             <div className="mesas-grid">
-                {mesasList.map((mesa) => (
-                    <div className='mesa' key={mesa.id_doc}>
-                        <h3 className='mesa-title'>{mesa.nombre}</h3>
-                        <p className='mesa-id'>ID: {mesa.id}</p>
-                        <div className="mesa-actions">
-                            <button className='mesa-button' onClick={() => { setSelectedMesa(mesa); setView("pedidos"); }}>Visualizar</button>
-                            <button className='mesa-button eliminar' onClick={() => eliminarMesa(mesa.id_doc)}>Eliminar</button>
+                {mesasList.map((mesa) => {
+                    const count = pedidosCount[mesa.id_doc] || 0;
+                    return (
+                        <div className={`mesa ${count > 0 ? 'con-pedidos' : ''}`} key={mesa.id_doc}>
+                            <h3 className='mesa-title'>{mesa.nombre}</h3>
+                            <p className='mesa-id'>ID: {mesa.id}</p>
+                            {count > 0 && (
+                                <div className="mesa-pedidos-count">
+                                    <span>Pedidos: {count}</span>
+                                </div>
+                            )}
+                            <div className="mesa-actions">
+                                <button className='mesa-button' onClick={() => { setSelectedMesa(mesa); setView("pedidos"); }}>Visualizar</button>
+                                <button className='mesa-button eliminar' onClick={() => eliminarMesa(mesa.id_doc)}>Eliminar</button>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
     )
