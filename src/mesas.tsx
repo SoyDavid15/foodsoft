@@ -110,7 +110,6 @@ export const mesas = ({ setView, setSelectedMesa }: Props) => {
                     return (
                         <div className={`mesa ${count > 0 ? 'con-pedidos' : ''}`} key={mesa.id_doc}>
                             <h3 className='mesa-title'>{mesa.nombre}</h3>
-                            <p className='mesa-id'>ID: {mesa.id}</p>
                             {count > 0 && (
                                 <div className="mesa-pedidos-count">
                                     <span>Pedidos: {count}</span>
