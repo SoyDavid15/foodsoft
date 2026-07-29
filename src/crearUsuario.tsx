@@ -12,13 +12,14 @@ export const crearUsuario = ({ onCompletado }: Props) => {
     const [direccion, setDireccion] = useState('');
     const [telefono, setTelefono] = useState('');
     const [tipo, setTipo] = useState('');
+    const [plan, setPlan] = useState('gratis');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             const user = auth.currentUser;
             if (user) {
-                // Calculate default dates (30 days from today)
+                // Calculate default dates (30 days from today for Pro)
                 const today = new Date();
                 const trialEndDate = new Date(today);
                 trialEndDate.setDate(today.getDate() + 30);
@@ -30,8 +31,9 @@ export const crearUsuario = ({ onCompletado }: Props) => {
                     direccion,
                     telefono,
                     tipo,
+                    plan,
                     estado: 'activo', // Default status
-                    fechaVencimiento: formattedDate, // 30 days trial
+                    fechaVencimiento: plan === 'pro' ? formattedDate : null,
                     userEmail: user.email,
                     createdAt: new Date().toISOString()
                 });
@@ -62,6 +64,24 @@ export const crearUsuario = ({ onCompletado }: Props) => {
                 
                 <label htmlFor="tipo">Tipo de negocio</label>
                 <input id="tipo" type="text" placeholder="Ej: Restaurante, Cafetería" value={tipo} onChange={e => setTipo(e.target.value)} required />
+
+                <label>Versión del sistema</label>
+                <div className="plan-selector">
+                    <div 
+                        className={`plan-option ${plan === 'gratis' ? 'selected' : ''}`}
+                        onClick={() => setPlan('gratis')}
+                    >
+                        <div className="plan-title">🌟 Versión Gratis</div>
+                        <div className="plan-desc">Por defecto. Sin bloqueos por vencimiento.</div>
+                    </div>
+                    <div 
+                        className={`plan-option ${plan === 'pro' ? 'selected' : ''}`}
+                        onClick={() => setPlan('pro')}
+                    >
+                        <div className="plan-title">🚀 Versión Pro</div>
+                        <div className="plan-desc">Funcionalidades avanzadas (30 días de prueba).</div>
+                    </div>
+                </div>
 
                 <div className="form-buttons">
                     <button type="submit" className="btn-submit">

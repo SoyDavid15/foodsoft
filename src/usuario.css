@@ -1,0 +1,121 @@
+.usuario-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2.5rem;
+    background: var(--card);
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.usuario-header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.usuario-header h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+}
+
+.usuario-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+}
+
+.usuario-card-item {
+    background: #f8fafc;
+    padding: 1.25rem;
+    border-radius: 14px;
+    border: 1px solid #f1f5f9;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.usuario-card-label {
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin: 0;
+}
+
+.usuario-card-value {
+    font-size: 1.05rem;
+    color: var(--text);
+    margin: 0;
+    font-weight: 600;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.usuario-logout-btn {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 14px;
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.usuario-logout-btn:hover {
+    background-color: #dc2626;
+}
+
+.usuario-plan-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.usuario-plan-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.usuario-plan-btn.pro {
+    background-color: #0f172a;
+    color: white;
+}
+
+.usuario-plan-btn.pro:hover {
+    background-color: #334155;
+}
+
+.usuario-plan-btn.gratis {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+}
+
+.usuario-plan-btn.gratis:hover {
+    background-color: #e2e8f0;
+}
+
+@media (max-width: 600px) {
+    .usuario-container {
+        padding: 1.5rem;
+    }
+    .usuario-grid {
+        grid-template-columns: 1fr;
+    }
+}

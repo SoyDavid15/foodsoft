@@ -57,7 +57,7 @@ export const HacerPedido = () => {
         setCart(newCart);
     };
 
-    const completeOrder = async () => {
+    const completeOrder = async (nota: string) => {
         if (cart.length === 0) return;
 
         try {
@@ -71,6 +71,7 @@ export const HacerPedido = () => {
                 })),
                 total: cart.reduce((sum, item) => sum + item.precio, 0),
                 estado: "pendiente",
+                nota: nota,
                 fecha: new Date().toISOString(),
             });
 
@@ -99,7 +100,7 @@ export const HacerPedido = () => {
                     🛒 <span>{cart.length}</span>
                 </button>
             </header>
-            
+
             <h2>Menú</h2>
             {menuList.length === 0 ? (
                 <p>No hay productos en el menú.</p>
@@ -110,8 +111,8 @@ export const HacerPedido = () => {
                             <strong>{producto.nombre}</strong> — ${producto.precio.toFixed(2)}
                             <br />
                             <span>{producto.descripcion}</span>
-                            <button 
-                                className="add-button" 
+                            <button
+                                className="add-button"
                                 onClick={() => addToCart(producto)}
                             >
                                 Pedir
@@ -122,9 +123,9 @@ export const HacerPedido = () => {
             )}
 
             {isCartOpen && (
-                <CarritoPedidos 
-                    cart={cart} 
-                    onClose={() => setIsCartOpen(false)} 
+                <CarritoPedidos
+                    cart={cart}
+                    onClose={() => setIsCartOpen(false)}
                     onRemove={removeFromCart}
                     onComplete={completeOrder}
                 />

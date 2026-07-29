@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { db, auth } from "./firebase";
 import { collection, query, where, onSnapshot, doc, updateDoc, deleteDoc, writeBatch } from "firebase/firestore";
-import { QRCodeSVG } from "qrcode.react";
+import { QRCodeCanvas } from "qrcode.react";
 import "./pedidos.css";
 
 interface Mesa {
@@ -21,13 +21,42 @@ interface Order {
     items: OrderItem[];
     total: number;
     estado: string;
+    nota?: string;
     fecha: string;
 }
+
+const NoteDisplay = ({ text }: { text: string }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const maxLength = 60; // Truncate at 60 chars
+
+    if (text.length <= maxLength) {
+        return (
+            <div className="order-note-display">
+                <strong>Nota:</strong> {text}
+            </div>
+        );
+    }
+
+    return (
+        <div className={`order-note-display ${isExpanded ? 'expanded' : ''}`}>
+            <div className="note-content">
+                <strong>Nota:</strong> {isExpanded ? text : `${text.slice(0, maxLength)}...`}
+            </div>
+            <button 
+                className="show-more-btn" 
+                onClick={() => setIsExpanded(!isExpanded)}
+            >
+                {isExpanded ? "Ver menos ▲" : "Ver más ▼"}
+            </button>
+        </div>
+    );
+};
 
 export const Pedidos = ({ mesa }: { mesa: Mesa | null }) => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
     const usuarioId = auth.currentUser?.uid;
+    const qrRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
         if (!mesa || !usuarioId) return;
@@ -109,6 +138,22 @@ export const Pedidos = ({ mesa }: { mesa: Mesa | null }) => {
         );
     };
 
+    const downloadQRCode = () => {
+        const canvas = qrRef.current;
+        if (!canvas) return;
+
+        const pngUrl = canvas
+            .toDataURL("image/png")
+            .replace("image/png", "image/octet-stream");
+        
+        const downloadLink = document.createElement("a");
+        downloadLink.href = pngUrl;
+        downloadLink.download = `QR_Mesa_${mesa?.nombre || "Mesa"}.png`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    };
+
     if (!mesa || !usuarioId) {
         return <div><p>No se ha seleccionado ninguna mesa.</p></div>;
     }
@@ -158,6 +203,7 @@ export const Pedidos = ({ mesa }: { mesa: Mesa | null }) => {
                                             {order.estado.toUpperCase()}
                                         </span>
                                     </div>
+                                    {order.nota && <NoteDisplay text={order.nota} />}
                                 </div>
                                 <div className="order-actions">
                                     {order.estado === "pendiente" && (
@@ -193,8 +239,22 @@ export const Pedidos = ({ mesa }: { mesa: Mesa | null }) => {
                 <h3>QR Menú</h3>
                 <p>Escanea para pedir:</p>
                 <div className="qr-box">
-                    <QRCodeSVG value={url} size={180} />
+                    <QRCodeCanvas 
+                        ref={qrRef} 
+                        value={url} 
+                        size={180} 
+                        level="H" 
+                        includeMargin={true}
+                    />
                 </div>
+                <button 
+                    className="download-qr-btn" 
+                    onClick={downloadQRCode}
+                    title="Descargar código QR"
+                >
+                    <span className="btn-icon">📥</span>
+                    Descargar QR
+                </button>
                 <p className="url-text">{url}</p>
             </div>
         </div>

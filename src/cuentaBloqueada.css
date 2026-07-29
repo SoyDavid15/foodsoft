@@ -1,0 +1,90 @@
+.cuenta-bloqueada-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100vw;
+    text-align: center;
+    padding: 2rem;
+    background-color: #f8fafc;
+    color: #0f172a;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    box-sizing: border-box;
+}
+
+.cuenta-bloqueada-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 3rem;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.cuenta-bloqueada-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.cuenta-bloqueada-card h1 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.cuenta-bloqueada-card p {
+    font-size: 0.95rem;
+    color: #64748b;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.cuenta-bloqueada-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.cuenta-bloqueada-btn {
+    padding: 12px 24px;
+    background-color: #25d366; /* WhatsApp green */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.cuenta-bloqueada-btn:hover {
+    filter: brightness(0.95);
+    transform: translateY(-1px);
+}
+
+.cuenta-bloqueada-btn.secondary {
+    background-color: #f1f5f9;
+    color: #475569;
+}
+
+.cuenta-bloqueada-btn.secondary:hover {
+    background-color: #e2e8f0;
+    color: #0f172a;
+}

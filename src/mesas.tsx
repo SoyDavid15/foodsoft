@@ -73,8 +73,8 @@ export const mesas = ({ setView, setSelectedMesa }: Props) => {
                 id: nextId,
                 usuarioId: user.uid
             })
-            setStatus(`Mesa ${nextId} guardada exitosamente!`);
-            alert(`Mesa ${nextId} guardada exitosamente`)
+            setStatus(`¡Mesa ${nextId} creada exitosamente!`);
+            setTimeout(() => setStatus(""), 3000);
         } catch (error: any) {
             console.error(error);
             setStatus("Error al guardar: " + error.message);
@@ -87,6 +87,7 @@ export const mesas = ({ setView, setSelectedMesa }: Props) => {
             try {
                 await deleteDoc(doc(db, "mesas", id_doc));
                 setStatus("Mesa eliminada correctamente");
+                setTimeout(() => setStatus(""), 3000);
             } catch (error: any) {
                 console.error(error);
                 setStatus("Error al eliminar: " + error.message);
@@ -96,33 +97,58 @@ export const mesas = ({ setView, setSelectedMesa }: Props) => {
 
     return (
         <div className="mesas-container">
-            <h2>Mesas</h2>
-            <button className="mesa-button" onClick={guardarMesa}>Nueva Mesa</button>
+            <div className="mesas-header-section">
+                <div>
+                    <h2>Mesas</h2>
+                    <p className="mesas-subtitle">Administra las mesas de tu local y visualiza sus pedidos activos.</p>
+                </div>
+                <button className="mesa-button" onClick={guardarMesa} style={{ width: 'auto', padding: '12px 20px' }}>
+                    + Nueva Mesa
+                </button>
+            </div>
+
             {status && (
                 <p className={`status-message ${status.includes('Error') ? 'error' : 'success'}`}>
                     {status}
                 </p>
             )}
 
-            <div className="mesas-grid">
-                {mesasList.map((mesa) => {
-                    const count = pedidosCount[mesa.id_doc] || 0;
-                    return (
-                        <div className={`mesa ${count > 0 ? 'con-pedidos' : ''}`} key={mesa.id_doc}>
-                            <h3 className='mesa-title'>{mesa.nombre}</h3>
-                            {count > 0 && (
-                                <div className="mesa-pedidos-count">
-                                    <span>Pedidos: {count}</span>
+            {mesasList.length === 0 ? (
+                <div className="empty-mesas">
+                    <p>No tienes mesas creadas aún.</p>
+                    <button className="mesa-button" onClick={guardarMesa} style={{ width: 'auto', display: 'inline-block' }}>
+                        Crear primera mesa
+                    </button>
+                </div>
+            ) : (
+                <div className="mesas-grid">
+                    {mesasList.map((mesa) => {
+                        const count = pedidosCount[mesa.id_doc] || 0;
+                        return (
+                            <div className={`mesa ${count > 0 ? 'con-pedidos' : ''}`} key={mesa.id_doc}>
+                                <div className="mesa-header-info">
+                                    <h3 className='mesa-title'>{mesa.nombre}</h3>
+                                    {count > 0 ? (
+                                        <div className="mesa-pedidos-count">
+                                            <span>🔥 {count} {count === 1 ? 'pedido' : 'pedidos'}</span>
+                                        </div>
+                                    ) : (
+                                        <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: '500' }}>Disponible</span>
+                                    )}
                                 </div>
-                            )}
-                            <div className="mesa-actions">
-                                <button className='mesa-button' onClick={() => { setSelectedMesa(mesa); setView("pedidos"); }}>Visualizar</button>
-                                <button className='mesa-button eliminar' onClick={() => eliminarMesa(mesa.id_doc)}>Eliminar</button>
+                                <div className="mesa-actions">
+                                    <button className='mesa-button' onClick={() => { setSelectedMesa(mesa); setView("pedidos"); }}>
+                                        Ver Pedidos
+                                    </button>
+                                    <button className='mesa-button eliminar' onClick={() => eliminarMesa(mesa.id_doc)} title="Eliminar mesa">
+                                        🗑️
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    );
-                })}
-            </div>
+                        );
+                    })}
+                </div>
+            )}
         </div>
     )
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { auth, db } from "./firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import "./usuario.css";
 
 interface Usuario {
     nombre: string;
@@ -8,11 +9,16 @@ interface Usuario {
     telefono?: string;
     tipo?: string;
     estado?: string;
+    plan?: string;
     fechaVencimiento?: string;
     fechaProximoPago?: string;
 }
 
-export const usuario = () => {
+interface Props {
+    setView?: (view: string) => void;
+}
+
+export const usuario = ({ setView }: Props) => {
     const [datosUsuario, setDatosUsuario] = useState<Usuario | null>(null);
 
     useEffect(() => {
@@ -35,6 +41,30 @@ export const usuario = () => {
         return () => unsubscribe();
     }, []);
 
+    const cambiarPlan = async (nuevoPlan: string) => {
+        const user = auth.currentUser;
+        if (!user) return;
+        try {
+            const docRef = doc(db, "usuarios", user.uid);
+            const today = new Date();
+            const trialEndDate = new Date(today);
+            trialEndDate.setDate(today.getDate() + 30);
+            const formattedDate = trialEndDate.toISOString().split('T')[0];
+
+            const updates: any = {
+                plan: nuevoPlan,
+                fechaVencimiento: nuevoPlan === 'pro' ? formattedDate : null
+            };
+
+            await updateDoc(docRef, updates);
+            setDatosUsuario(prev => prev ? { ...prev, ...updates } : null);
+            alert(`Has cambiado exitosamente a la ${nuevoPlan === 'pro' ? 'versión Pro 🚀' : 'versión Gratis 🌟'}`);
+        } catch (error) {
+            console.error("Error al cambiar de plan:", error);
+            alert("Error al cambiar de plan");
+        }
+    };
+
     const cerrarSesion = async () => {
         try {
             await auth.signOut();
@@ -45,64 +75,83 @@ export const usuario = () => {
 
     if (!datosUsuario) {
         return (
-            <div style={{ padding: '20px', textAlign: 'center' }}>
+            <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--muted)' }}>
                 <p>Cargando información del usuario...</p>
             </div>
         );
     }
 
+    const esPro = datosUsuario.plan === 'pro';
+
     return (
-        <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px', backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-            <h2 style={{ borderBottom: '2px solid #f0f0f0', paddingBottom: '10px', marginBottom: '20px' }}>Perfil del Usuario</h2>
+        <div className="usuario-container">
+            <div className="usuario-header">
+                <h2>Perfil del Usuario</h2>
+            </div>
             
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                <div style={{ backgroundColor: '#f9fafb', padding: '15px', borderRadius: '8px' }}>
-                    <p style={{ fontWeight: 'bold', color: '#4b5563', margin: '0 0 5px 0' }}>Nombre del Negocio</p>
-                    <p style={{ fontSize: '1.1rem', margin: 0 }}>{datosUsuario.nombre}</p>
+            <div className="usuario-grid">
+                <div className="usuario-card-item">
+                    <p className="usuario-card-label">Nombre del Negocio</p>
+                    <p className="usuario-card-value">{datosUsuario.nombre}</p>
                 </div>
                 
-                <div style={{ backgroundColor: '#f9fafb', padding: '15px', borderRadius: '8px' }}>
-                    <p style={{ fontWeight: 'bold', color: '#4b5563', margin: '0 0 5px 0' }}>Estado de Cuenta</p>
-                    <p style={{ 
-                        fontSize: '1.1rem', 
-                        margin: 0, 
-                        color: datosUsuario.estado === 'activo' ? '#059669' : '#dc2626',
-                        fontWeight: 'bold'
-                    }}>
+                <div className="usuario-card-item">
+                    <p className="usuario-card-label">Versión del Sistema</p>
+                    <p className="usuario-card-value" style={{ color: esPro ? '#2563eb' : '#059669' }}>
+                        {esPro ? '🚀 Versión Pro' : '🌟 Versión Gratis'}
+                    </p>
+                </div>
+
+                <div className="usuario-card-item">
+                    <p className="usuario-card-label">Estado de Cuenta</p>
+                    <p className="usuario-card-value" style={{ color: datosUsuario.estado === 'activo' ? '#059669' : '#dc2626' }}>
                         {datosUsuario.estado === 'activo' ? '✅ Activo' : '❌ Inactivo'}
                     </p>
                 </div>
 
-                <div style={{ backgroundColor: '#f9fafb', padding: '15px', borderRadius: '8px' }}>
-                    <p style={{ fontWeight: 'bold', color: '#4b5563', margin: '0 0 5px 0' }}>Dirección</p>
-                    <p style={{ margin: 0 }}>{datosUsuario.direccion || 'No especificada'}</p>
+                <div className="usuario-card-item">
+                    <p className="usuario-card-label">Dirección</p>
+                    <p className="usuario-card-value">{datosUsuario.direccion || 'No especificada'}</p>
                 </div>
 
-                <div style={{ backgroundColor: '#f9fafb', padding: '15px', borderRadius: '8px' }}>
-                    <p style={{ fontWeight: 'bold', color: '#4b5563', margin: '0 0 5px 0' }}>Teléfono</p>
-                    <p style={{ margin: 0 }}>{datosUsuario.telefono || 'No especificado'}</p>
+                <div className="usuario-card-item">
+                    <p className="usuario-card-label">Teléfono</p>
+                    <p className="usuario-card-value">{datosUsuario.telefono || 'No especificado'}</p>
                 </div>
 
-                <div style={{ backgroundColor: '#f9fafb', padding: '15px', borderRadius: '8px' }}>
-                    <p style={{ fontWeight: 'bold', color: '#4b5563', margin: '0 0 5px 0' }}>Vencimiento de Suscripción</p>
-                    <p style={{ margin: 0 }}>{datosUsuario.fechaVencimiento || 'N/A'}</p>
-                </div>
+                {esPro && (
+                    <div className="usuario-card-item">
+                        <p className="usuario-card-label">Vencimiento de Suscripción</p>
+                        <p className="usuario-card-value">{datosUsuario.fechaVencimiento || 'N/A'}</p>
+                    </div>
+                )}
+            </div>
+
+            <div className="usuario-plan-actions" style={{ marginTop: '1.5rem' }}>
+                {!esPro ? (
+                    <button 
+                        onClick={() => {
+                            if (setView) {
+                                setView('contacto-pro');
+                            }
+                        }}
+                        className="usuario-plan-btn pro"
+                    >
+                        🚀 Cambiar a versión Pro
+                    </button>
+                ) : (
+                    <button 
+                        onClick={() => cambiarPlan('gratis')}
+                        className="usuario-plan-btn gratis"
+                    >
+                        🌟 Cambiar a versión Gratis
+                    </button>
+                )}
             </div>
 
             <button 
                 onClick={cerrarSesion}
-                style={{
-                    marginTop: '30px',
-                    width: '100%',
-                    padding: '12px',
-                    backgroundColor: '#ef4444',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.2s'
-                }}
+                className="usuario-logout-btn"
             >
                 Cerrar sesión
             </button>

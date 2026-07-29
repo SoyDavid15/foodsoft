@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 interface Producto {
     id_doc: string;
@@ -10,10 +10,11 @@ interface CarritoProps {
     cart: Producto[];
     onClose: () => void;
     onRemove: (index: number) => void;
-    onComplete: () => void;
+    onComplete: (nota: string) => void;
 }
 
 const CarritoPedidos: React.FC<CarritoProps> = ({ cart, onClose, onRemove, onComplete }) => {
+    const [nota, setNota] = useState("");
     const total = cart.reduce((sum, item) => sum + item.precio, 0);
 
     return (
@@ -38,8 +39,8 @@ const CarritoPedidos: React.FC<CarritoProps> = ({ cart, onClose, onRemove, onCom
                                         <strong>{item.nombre}</strong>
                                         <span>${item.precio.toFixed(2)}</span>
                                     </div>
-                                    <button 
-                                        className="remove-item" 
+                                    <button
+                                        className="remove-item"
                                         onClick={() => onRemove(index)}
                                     >
                                         Eliminar
@@ -52,7 +53,18 @@ const CarritoPedidos: React.FC<CarritoProps> = ({ cart, onClose, onRemove, onCom
                                 <span>Total:</span>
                                 <strong>${total.toFixed(2)}</strong>
                             </div>
-                            <button className="complete-order-btn" onClick={onComplete}>
+                            <div className="note-input-container">
+                                <input
+                                    type="text"
+                                    className="cart-note-input"
+                                    placeholder="Añada una nota para el chef (opcional)"
+                                    value={nota}
+                                    onChange={(e) => setNota(e.target.value)}
+                                    maxLength={100}
+                                />
+                                <span className="char-counter">{nota.length}/100</span>
+                            </div>
+                            <button className="complete-order-btn" onClick={() => onComplete(nota)}>
                                 Confirmar Pedido
                             </button>
                         </div>

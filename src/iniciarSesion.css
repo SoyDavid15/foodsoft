@@ -4,90 +4,58 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, #4C8CE4 0%, #a2c2e8 100%);
+    background: #f8fafc;
     margin: 0;
     padding: 2rem;
     box-sizing: border-box;
-    font-family: 'Outfit', 'Inter', sans-serif;
-    gap: 8rem;
-    overflow-x: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    gap: 6rem;
 }
 
 .iniciar-sesion-container {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border-radius: 30px;
+    background: #ffffff;
+    border-radius: 24px;
     padding: 3rem;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    border: 1px solid #e2e8f0;
     width: 100%;
-    max-width: 450px;
+    max-width: 440px;
     text-align: center;
-    position: relative;
-    z-index: 2; /* Put it on top of the 'bienvenida' */
-    animation: fadeIn 0.8s ease-out;
+    z-index: 2;
 }
 
 .bienvenida {
-    position: relative;
-    z-index: 1; /* Start 'behind' or below the container */
     text-align: left;
-    max-width: 500px;
-    animation: slideOutFromCenter 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-width: 450px;
 }
 
 .bienvenida h2 {
-    font-size: 4rem;
-    color: white;
+    font-size: 3rem;
+    color: #0f172a;
     margin: 0;
     font-weight: 900;
-    text-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    letter-spacing: -0.03em;
 }
 
 .bienvenida p {
-    font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.9);
-    margin-top: 0.5rem;
-    font-weight: 500;
-    max-width: 400px;
+    font-size: 1.15rem;
+    color: #64748b;
+    margin-top: 1rem;
+    font-weight: 400;
+    line-height: 1.6;
 }
-
-@keyframes slideOutFromCenter {
-    from {
-        opacity: 0;
-        transform: translateX(calc(100% + 4rem)) scale(0.8); /* Moves it 'inside' the container */
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0) scale(1);
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-
 
 .iniciar-sesion-content h2 {
-    font-size: 2.5rem;
-    color: #2f3542;
+    font-size: 2rem;
+    color: #0f172a;
     margin-bottom: 0.5rem;
     font-weight: 800;
 }
 
 .iniciar-sesion-content p {
-    color: #57606f;
-    font-size: 1.5rem;
-    margin-bottom: 2.5rem;
+    color: #64748b;
+    font-size: 1rem;
+    margin-bottom: 2rem;
 }
 
 .iniciar-sesion-buttons {
@@ -97,104 +65,44 @@
 }
 
 .iniciar-sesion-buttons button {
-    background: var(--primary-color, #4C8CE4);
+    background: #0f172a;
     color: white;
     border: none;
-    padding: 1rem 2rem;
-    font-size: 1.1rem;
-    font-weight: 700;
-    border-radius: 15px;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 12px;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    box-shadow: 0 4px 15px rgba(76, 140, 228, 0.3);
+    gap: 12px;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
 }
 
 .iniciar-sesion-buttons button:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(76, 140, 228, 0.4);
-    background: #3a75c1;
+    background: #334155;
+    transform: translateY(-2px);
 }
 
 .iniciar-sesion-buttons button:active {
     transform: translateY(0);
 }
 
-@media (max-width: 1024px) {
-    .iniciar-sesion-page {
-        gap: 4rem;
-        padding: 3rem;
-    }
-
-    .bienvenida h2 {
-        font-size: 3.5rem;
-    }
-}
-
 @media (max-width: 850px) {
     .iniciar-sesion-page {
         flex-direction: column;
-        gap: 3rem;
-        padding: 2rem;
-        justify-content: flex-start;
-        padding-top: 4rem;
+        gap: 2.5rem;
+        padding: 1.5rem;
+        justify-content: center;
     }
 
     .bienvenida {
         text-align: center;
-        max-width: 100%;
-        animation: slideInFromTop 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    .bienvenida p {
-        margin: 0.5rem auto 0;
-    }
-
-    .iniciar-sesion-container {
-        margin-bottom: 2rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .iniciar-sesion-page {
-        padding-top: 2rem;
-        gap: 2rem;
     }
 
     .bienvenida h2 {
         font-size: 2.5rem;
-    }
-
-    .bienvenida p {
-        font-size: 1.1rem;
-    }
-
-    .iniciar-sesion-container {
-        padding: 2rem;
-        border-radius: 20px;
-    }
-
-    .iniciar-sesion-content p {
-        font-size: 1.2rem;
-        margin-bottom: 2rem;
-    }
-
-    .iniciar-sesion-buttons button {
-        padding: 0.8rem 1.5rem;
-        font-size: 1rem;
-    }
-}
-
-@keyframes slideInFromTop {
-    from {
-        opacity: 0;
-        transform: translateY(-50px) scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
     }
 }

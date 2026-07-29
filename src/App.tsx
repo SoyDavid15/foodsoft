@@ -5,11 +5,14 @@ import Menu from './menu'
 import Usuario from './usuario'
 import IniciarSesion from './iniciarSesion'
 import { crearUsuario as CrearUsuario } from './crearUsuario'
+import CuentaBloqueada from './cuentaBloqueada'
 import HacerPedido from './hacerPedido'
+import AdSenseBanner from './AdSenseBanner'
+import ContactoPro from './contactoPro'
 import { useState, useEffect } from 'react'
 import { auth, db } from './firebase'
 import { onAuthStateChanged, type User } from 'firebase/auth'
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, onSnapshot } from 'firebase/firestore'
 
 function App() {
   if (window.location.pathname === '/hacer-pedido') {
@@ -23,48 +26,65 @@ function App() {
   const [perfilCompletado, setPerfilCompletado] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
   const [blockReason, setBlockReason] = useState("");
+  const [userPlan, setUserPlan] = useState("gratis");
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    let unsubscribeDoc: (() => void) | undefined;
+
+    const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
         try {
           const docRef = doc(db, "usuarios", currentUser.uid);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            setPerfilCompletado(true);
+          unsubscribeDoc = onSnapshot(docRef, (docSnap) => {
+            if (docSnap.exists()) {
+              const data = docSnap.data();
+              setPerfilCompletado(true);
 
-            // Blocking logic
-            const today = new Date();
-            today.setHours(0, 0, 0, 0); // Normalized to start of day
+              const plan = data.plan || 'gratis';
+              setUserPlan(plan);
 
-            if (data.estado === "inactivo") {
-              setIsBlocked(true);
-              setBlockReason("Tu cuenta ha sido desactivada por el administrador.");
-            } else if (data.fechaProximoPago && new Date(data.fechaProximoPago) < today) {
-              setIsBlocked(true);
-              setBlockReason("La fecha límite de pago ha vencido. Por favor, regulariza tu situación.");
-            } else if (data.fechaVencimiento && new Date(data.fechaVencimiento) < today) {
-              setIsBlocked(true);
-              setBlockReason("Tu suscripción ha vencido.");
+              // Blocking logic
+              const today = new Date();
+              today.setHours(0, 0, 0, 0); // Normalized to start of day
+
+              if (data.estado === "inactivo") {
+                setIsBlocked(true);
+                setBlockReason("Tu cuenta ha sido desactivada por el administrador.");
+              } else if (plan === "gratis") {
+                setIsBlocked(false);
+              } else if (data.fechaProximoPago && new Date(data.fechaProximoPago) < today) {
+                setIsBlocked(true);
+                setBlockReason("La fecha límite de pago ha vencido. Por favor, regulariza tu situación.");
+              } else if (data.fechaVencimiento && new Date(data.fechaVencimiento) < today) {
+                setIsBlocked(true);
+                setBlockReason("Tu suscripción ha vencido.");
+              } else {
+                setIsBlocked(false);
+              }
             } else {
-              setIsBlocked(false);
+              setPerfilCompletado(false);
             }
-          } else {
-            setPerfilCompletado(false);
-          }
+            setLoading(false);
+          });
         } catch (error) {
           console.error("Error al cargar el perfil del usuario:", error);
           setPerfilCompletado(false);
+          setLoading(false);
         }
       } else {
+        if (unsubscribeDoc) unsubscribeDoc();
         setPerfilCompletado(false);
         setIsBlocked(false);
+        setUserPlan("gratis");
+        setLoading(false);
       }
-      setLoading(false);
     });
-    return () => unsubscribe();
+
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeDoc) unsubscribeDoc();
+    };
   }, []);
 
   if (loading) {
@@ -84,38 +104,7 @@ function App() {
   }
 
   if (isBlocked) {
-    return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        textAlign: 'center',
-        padding: '20px',
-        backgroundColor: '#fff5f5',
-        color: '#c53030'
-      }}>
-        <div style={{ fontSize: '4rem', marginBottom: '20px' }}>⚠️</div>
-        <h1 style={{ fontSize: '2rem', marginBottom: '10px' }}>Cuenta Bloqueada</h1>
-        <p style={{ fontSize: '1.2rem', maxWidth: '500px' }}>{blockReason}</p>
-        <p style={{ marginTop: '20px', color: '#718096' }}>Por favor, contacta a soporte para reactivar tu cuenta.</p>
-        <button
-          onClick={() => auth.signOut()}
-          style={{
-            marginTop: '30px',
-            padding: '10px 20px',
-            backgroundColor: '#c53030',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}
-        >
-          Cerrar sesión
-        </button>
-      </div>
-    );
+    return <CuentaBloqueada reason={blockReason} onSignOut={() => auth.signOut()} />;
   }
 
   return (
@@ -130,12 +119,14 @@ function App() {
           </ul>
         </nav>
       </header>
-      <main>
+       <main>
         <div className='main-container'>
+          {userPlan === 'gratis' && <AdSenseBanner />}
           {view === "mesas" && <Mesas setView={setView} setSelectedMesa={setSelectedMesa} />}
           {view === "pedidos" && <Pedidos mesa={selectedMesa} />}
           {view === "menu" && <Menu setView={setView} />}
-          {view === "usuario" && <Usuario />}
+          {view === "usuario" && <Usuario setView={setView} />}
+          {view === "contacto-pro" && <ContactoPro onBack={() => setView("usuario")} />}
         </div>
       </main>
     </div>
