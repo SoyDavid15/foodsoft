@@ -21,8 +21,8 @@ export const IniciarSesion = () => {
                     <h1>Foodsoft<span>.</span></h1>
                 </div>
                 <nav className="landing-nav-links">
-                    <a href="#beneficios">Arquitectura</a>
-                    <a href="#comparativa">Eficiencia Operativa</a>
+                    <a href="#beneficios">Beneficios</a>
+                    <a href="#comparativa">Comparativa</a>
                     <a href="#funciones">Módulos</a>
                     <a href="https://www.instagram.com/clikea2026/" target="_blank" rel="noopener noreferrer" className="nav-social-link instagram">Instagram</a>
                     <a href="https://clikea.vercel.app" target="_blank" rel="noopener noreferrer" className="nav-social-link web">Visitar Clikea</a>
@@ -38,13 +38,13 @@ export const IniciarSesion = () => {
             <section className="landing-hero">
                 <div className="landing-hero-content">
                     <div className="landing-badge">
-                        INFRAESTRUCTURA OPERATIVA PARA HOSTELERÍA
+                        PLATAFORMA INTEGRAL PARA HOSTELERÍA
                     </div>
                     <h1 className="landing-title">
-                        Control total de salón, cocina y finanzas en una sola plataforma.
+                        Control total de mesas, cocina y ventas en tiempo real.
                     </h1>
                     <p className="landing-subtitle">
-                        Sustituya procesos manuales frágiles por un flujo digital robusto: códigos QR nativos para mesas, sincronización en tiempo real con cocina y auditoría financiera automatizada sin fricción.
+                        Sustituye procesos manuales por un flujo digital rápido y sin errores: códigos QR en cada mesa, comandas instantáneas en cocina y control de caja automático sin complicaciones.
                     </p>
                     
                     <div className="hero-cta-box">
@@ -58,9 +58,9 @@ export const IniciarSesion = () => {
                             Acceder con Cuenta Google
                         </button>
                         <div className="hero-guarantees">
-                            <span>Sin costos de instalación</span>
+                            <span>Sin costes ocultos</span>
                             <span>Alta instantánea en 2 minutos</span>
-                            <span>Compatible con cualquier terminal móvil</span>
+                            <span>Funciona en cualquier móvil o tablet</span>
                         </div>
                     </div>
                 </div>
@@ -73,11 +73,11 @@ export const IniciarSesion = () => {
                             <span className="dot yellow"></span>
                             <span className="dot green"></span>
                         </div>
-                        <span className="mockup-title">Terminal Principal — Telemetría en Vivo</span>
+                        <span className="mockup-title">Panel de Control — En Vivo</span>
                     </div>
                     <div className="mockup-body">
                         <div className="mockup-stat-card">
-                            <span className="stat-label">Facturación Acumulada del Turno</span>
+                            <span className="stat-label">Ventas Totales del Turno</span>
                             <span className="stat-value">€1,480.00</span>
                             <span className="stat-trend positive">+24% frente al promedio histórico</span>
                         </div>
@@ -100,7 +100,7 @@ export const IniciarSesion = () => {
                             </div>
                         </div>
                         <div className="mockup-banner-mini">
-                            <span>Sincronización activa con estación de comandas · Latencia &lt; 100ms</span>
+                            <span>Sincronización en tiempo real con cocina · Cero retrasos</span>
                         </div>
                     </div>
                 </div>
@@ -109,33 +109,33 @@ export const IniciarSesion = () => {
             {/* Why You Need It / Business Benefits */}
             <section id="beneficios" className="landing-benefits">
                 <div className="section-header">
-                    <h2>Ingeniería orientada al rendimiento financiero</h2>
-                    <p>Cada componente del sistema está calibrado para eliminar fricción operativa y maximizar el margen por cubierto.</p>
+                    <h2>Diseñado para maximizar tus beneficios y simplificar la operación</h2>
+                    <p>Cada herramienta está creada para eliminar errores, agilizar el servicio y aumentar la rentabilidad de tu negocio.</p>
                 </div>
                 <div className="benefits-grid">
                     <div className="benefit-card">
                         <div className="benefit-number">01</div>
-                        <h3>Optimización del Ticket Medio</h3>
-                        <p>La presentación visual de alta fidelidad en dispositivos móviles estimula la selección de adicionales y postres sin saturar al personal de sala.</p>
-                        <div className="benefit-metric">Impacto estimado: +25% en consumo por comensal</div>
+                        <h3>Mayor Ticket Promedio</h3>
+                        <p>Los clientes piden cómodamente desde su móvil con fotos y descripciones detalladas, aumentando la venta de postres y extras sin esfuerzo.</p>
+                        <div className="benefit-metric">Impacto estimado: +25% por comensal</div>
                     </div>
                     <div className="benefit-card">
                         <div className="benefit-number">02</div>
-                        <h3>Reducción del Tiempo de Ciclo</h3>
-                        <p>El autoservicio mediante códigos QR en mesa desacopla la toma de pedidos de la disponibilidad del camarero en horas punta.</p>
+                        <h3>Cero Esperas Innecesarias</h3>
+                        <p>Los pedidos de mesa llegan instantáneamente a cocina, reduciendo drásticamente los tiempos de espera y mejorando la rotación de mesas.</p>
                         <div className="benefit-metric">Reducción de espera: -40% en primer tiempo</div>
                     </div>
                     <div className="benefit-card">
                         <div className="benefit-number">03</div>
-                        <h3>Eliminación de Mermas de Comanda</h3>
-                        <p>La transmisión directa y sin intermediarios de papel asegura que ningún plato quede sin registrar ni cobrar en la caja diaria.</p>
-                        <div className="benefit-metric">Auditoría: 100% trazabilidad de pedidos</div>
+                        <h3>Control Total de Caja</h3>
+                        <p>Adiós a las cuentas descuadradas. Cada pedido queda registrado digitalmente con su importe y estado de cobro exacto.</p>
+                        <div className="benefit-metric">Auditoría: 100% trazabilidad</div>
                     </div>
                     <div className="benefit-card">
                         <div className="benefit-number">04</div>
-                        <h3>Independencia Tecnológica</h3>
-                        <p>Arquitectura cloud-native optimizada para ejecutarse en smartphones, tablets o terminales existentes sin hardware propietario.</p>
-                        <div className="benefit-metric">Inversión inicial en equipos: €0</div>
+                        <h3>Sin Inversión en Hardware</h3>
+                        <p>Funciona directamente en los smartphones y tablets que ya tienes. Sin instalaciones complejas ni costosos equipos propietarios.</p>
+                        <div className="benefit-metric">Inversión inicial: €0</div>
                     </div>
                 </div>
             </section>
@@ -143,19 +143,19 @@ export const IniciarSesion = () => {
             {/* Before vs After Comparison */}
             <section id="comparativa" className="landing-comparison">
                 <div className="section-header">
-                    <h2>Evaluación de modelos operativos</h2>
-                    <p>Contraste empírico entre la operativa tradicional analógica y la automatización estructurada.</p>
+                    <h2>La diferencia de trabajar con Foodsoft</h2>
+                    <p>Compara el método tradicional con la gestión digital moderna.</p>
                 </div>
                 <div className="comparison-table">
                     <div className="comparison-col bad">
                         <div className="col-header">
-                            <h3>Operativa Tradicional</h3>
+                            <h3>Gestión Tradicional</h3>
                         </div>
                         <ul>
-                            <li><span>Dependencia de papel impreso y libretas propensas a extravíos y errores de lectura.</span></li>
-                            <li><span>Cartas físicas rígidas con costes elevados de reimpresión por cada modificación de carta o tarifa.</span></li>
-                            <li><span>Cuellos de botella severos en cocina durante las franjas horarias de máxima ocupación.</span></li>
-                            <li><span>Conciliaciones de caja manuales al cierre de turno con discrepancias recurrentes.</span></li>
+                            <li><span>Comandas en papel propensas a pérdida, extravío y errores de lectura.</span></li>
+                            <li><span>Cartas impresas costosas de actualizar cada vez que cambias un precio.</span></li>
+                            <li><span>Caos y retrasos en cocina durante las horas de mayor afluencia.</span></li>
+                            <li><span>Cuadres de caja manuales largos y propensos a discrepancias.</span></li>
                         </ul>
                     </div>
                     <div className="comparison-col good">
@@ -163,10 +163,10 @@ export const IniciarSesion = () => {
                             <h3>Ecosistema Foodsoft</h3>
                         </div>
                         <ul>
-                            <li><span>Toma de comanda digital con validación de inventario en tiempo real.</span></li>
-                            <li><span>Actualización instantánea del catálogo de productos y precios desde el panel central.</span></li>
-                            <li><span>Gestión de flujo de sala automatizada con estados de cocina transparentes.</span></li>
-                            <li><span>Cierre financiero automatizado y analítica de rendimiento por franja horaria.</span></li>
+                            <li><span>Pedidos digitales directos y sincronizados en tiempo real.</span></li>
+                            <li><span>Carta y precios actualizables al instante desde cualquier lugar.</span></li>
+                            <li><span>Flujo de cocina ordenado, claro y transparente.</span></li>
+                            <li><span>Cierre de caja y estadísticas financieras automáticas.</span></li>
                         </ul>
                     </div>
                 </div>
@@ -175,29 +175,29 @@ export const IniciarSesion = () => {
             {/* Core Features */}
             <section id="funciones" className="landing-features">
                 <div className="section-header">
-                    <h2>Módulos del Sistema</h2>
-                    <p>Herramientas de precisión diseñadas con rigor técnico para la gestión integral de establecimientos gastronómicos.</p>
+                    <h2>Módulos Principales</h2>
+                    <p>Herramientas potentes y fáciles de usar para la gestión integral de tu restaurante.</p>
                 </div>
                 <div className="landing-features-grid">
                     <div className="landing-feature-card">
                         <div className="feature-code">MOD-01</div>
-                        <h3>Gestión de Mesas y Códigos QR</h3>
-                        <p>Generación automatizada de identificadores únicos por mesa con códigos de alta resolución listos para producción y despliegue físico.</p>
+                        <h3>Mesas y Códigos QR</h3>
+                        <p>Genera e imprime códigos QR únicos para cada mesa listos para que tus clientes escaneen y pidan.</p>
                     </div>
                     <div className="landing-feature-card">
                         <div className="feature-code">MOD-02</div>
-                        <h3>Catálogo Multimedia y Compresión</h3>
-                        <p>Gestor de activos visuales con motor de compresión integrado que garantiza tiempos de carga inferiores a 0.5 segundos en cualquier red móvil.</p>
+                        <h3>Catálogo Interactivo</h3>
+                        <p>Sube fotos, categorías y precios de tus platos con una interfaz atractiva y optimizada para móvil.</p>
                     </div>
                     <div className="landing-feature-card">
                         <div className="feature-code">MOD-03</div>
-                        <h3>Inteligencia Financiera y Analítica</h3>
-                        <p>Cuadros de mando analíticos con desglose de ventas por franja horaria, identificación de productos de alta rotación y métricas de rendimiento.</p>
+                        <h3>Estadísticas y Reportes</h3>
+                        <p>Visualiza tus ventas totales, productos más vendidos y rendimiento por franja horaria.</p>
                     </div>
                     <div className="landing-feature-card">
                         <div className="feature-code">MOD-04</div>
-                        <h3>Monitor de Estado en Vivo</h3>
-                        <p>Consola central de cocina y sala con sincronización WebSocket que elimina la necesidad de intercomunicadores o impresoras térmicas adicionales.</p>
+                        <h3>Monitor de Cocina (KDS)</h3>
+                        <p>Pantalla en vivo para la cocina con estado de cada comanda en tiempo real.</p>
                     </div>
                 </div>
             </section>
@@ -205,8 +205,8 @@ export const IniciarSesion = () => {
             {/* Final CTA Banner */}
             <section className="landing-final-cta">
                 <div className="final-cta-container">
-                    <h2>Inicie la transición operativa de su establecimiento</h2>
-                    <p>Incorpore control financiero automatizado y excelencia en el servicio en menos de cinco minutos.</p>
+                    <h2>Empieza a digitalizar tu negocio hoy mismo</h2>
+                    <p>Mejora la experiencia de tus clientes y optimiza el trabajo de tu equipo en pocos minutos.</p>
                     <button className="google-signin-btn large" onClick={entrarConGooogle}>
                         <svg className="google-icon" viewBox="0 0 24 24" width="22" height="22">
                             <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>

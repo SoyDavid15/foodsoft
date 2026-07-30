@@ -215,22 +215,22 @@
     font-weight: 700;
 }
 
-/* Mockup */
+/* Mockup - Black & White / Light Minimal Style */
 .landing-hero-mockup {
-    background: #0f172a;
+    background: #ffffff;
     border-radius: var(--radius-lg);
-    border: 1px solid #1e293b;
+    border: 1px solid var(--border-color);
     overflow: hidden;
     box-shadow: var(--shadow-lg);
 }
 
 .mockup-header {
-    background: #1e293b;
+    background: #f8fafc;
     padding: 0.85rem 1.25rem;
     display: flex;
     align-items: center;
     gap: 1rem;
-    border-bottom: 1px solid #334155;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .mockup-dots {
@@ -244,13 +244,13 @@
     border-radius: 50%;
 }
 
-.dot.red { background: #ef4444; }
-.dot.yellow { background: #f59e0b; }
-.dot.green { background: #10b981; }
+.dot.red { background: #cbd5e1; }
+.dot.yellow { background: #cbd5e1; }
+.dot.green { background: #cbd5e1; }
 
 .mockup-title {
     font-size: 0.8rem;
-    color: #94a3b8;
+    color: var(--text-muted);
     font-weight: 600;
     letter-spacing: 0.02em;
 }
@@ -263,8 +263,8 @@
 }
 
 .mockup-stat-card {
-    background: #1e293b;
-    border: 1px solid #334155;
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
     padding: 1.25rem;
     border-radius: var(--radius-md);
     display: flex;
@@ -274,7 +274,7 @@
 
 .stat-label {
     font-size: 0.75rem;
-    color: #94a3b8;
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: 600;
@@ -283,12 +283,12 @@
 .stat-value {
     font-size: 1.85rem;
     font-weight: 800;
-    color: white;
+    color: var(--text-main);
 }
 
 .stat-trend {
     font-size: 0.8rem;
-    color: #10b981;
+    color: #059669;
     font-weight: 600;
 }
 
@@ -299,8 +299,8 @@
 }
 
 .mockup-item {
-    background: #1e293b;
-    border: 1px solid #334155;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
     padding: 1rem;
     border-radius: var(--radius-md);
     display: flex;
@@ -311,8 +311,8 @@
 .item-index {
     font-size: 0.85rem;
     font-weight: 800;
-    color: #38bdf8;
-    background: rgba(56, 189, 248, 0.1);
+    color: var(--text-main);
+    background: #f1f5f9;
     padding: 0.4rem 0.6rem;
     border-radius: 6px;
 }
@@ -324,14 +324,14 @@
 .item-details h4 {
     margin: 0 0 0.15rem 0;
     font-size: 0.9rem;
-    color: white;
+    color: var(--text-main);
     font-weight: 600;
 }
 
 .item-details p {
     margin: 0;
     font-size: 0.8rem;
-    color: #94a3b8;
+    color: var(--text-muted);
 }
 
 .badge-live {
@@ -342,23 +342,23 @@
 }
 
 .badge-live.active {
-    background: rgba(16, 185, 129, 0.15);
-    color: #34d399;
+    background: #eff6ff;
+    color: var(--accent);
 }
 
 .badge-live.ready {
-    background: rgba(245, 158, 11, 0.15);
-    color: #fbbf24;
+    background: #ecfdf5;
+    color: #059669;
 }
 
 .mockup-banner-mini {
-    background: rgba(56, 189, 248, 0.1);
-    border: 1px solid rgba(56, 189, 248, 0.2);
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
     padding: 0.75rem 1rem;
     border-radius: var(--radius-md);
     text-align: center;
     font-size: 0.75rem;
-    color: #38bdf8;
+    color: var(--text-muted);
     font-weight: 600;
 }
 
