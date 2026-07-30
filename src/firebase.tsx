@@ -20,3 +20,22 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
+
+export const getActiveUsuarioId = () => {
+    if (auth.currentUser) return auth.currentUser.uid;
+    try {
+        const session = JSON.parse(localStorage.getItem('foodsoft_session') || '{}');
+        return session.usuarioId || null;
+    } catch {
+        return null;
+    }
+};
+
+export const getActiveSession = () => {
+    try {
+        const session = JSON.parse(localStorage.getItem('foodsoft_session') || '{}');
+        return session.role ? session : null;
+    } catch {
+        return null;
+    }
+};

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { db, auth } from "./firebase";
+import { db, getActiveUsuarioId } from "./firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import "./estadisticas.css";
 
@@ -20,7 +20,7 @@ interface Order {
 export const Estadisticas = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
-    const usuarioId = auth.currentUser?.uid;
+    const usuarioId = getActiveUsuarioId();
 
     useEffect(() => {
         if (!usuarioId) {
@@ -218,22 +218,24 @@ export const Estadisticas = () => {
                     {orders.length === 0 ? (
                         <div className="no-data-chart">No hay datos de pedidos registrados aún.</div>
                     ) : (
-                        <div className="bar-chart-container">
-                            {dailyChartData.map((item, index) => {
-                                const heightPercent = Math.round((item.value / maxDailyRevenue) * 100);
-                                return (
-                                    <div key={index} className="bar-column">
-                                        <div className="bar-tooltip">${item.value.toFixed(2)}</div>
-                                        <div className="bar-wrapper">
-                                            <div 
-                                                className="bar-fill" 
-                                                style={{ height: `${Math.max(heightPercent, 4)}%` }}
-                                            ></div>
+                        <div className="bar-chart-scroll">
+                            <div className="bar-chart-container">
+                                {dailyChartData.map((item, index) => {
+                                    const heightPercent = Math.round((item.value / maxDailyRevenue) * 100);
+                                    return (
+                                        <div key={index} className="bar-column">
+                                            <div className="bar-tooltip">${item.value.toFixed(2)}</div>
+                                            <div className="bar-wrapper">
+                                                <div 
+                                                    className="bar-fill" 
+                                                    style={{ height: `${Math.max(heightPercent, 4)}%` }}
+                                                ></div>
+                                            </div>
+                                            <span className="bar-label">{item.label}</span>
                                         </div>
-                                        <span className="bar-label">{item.label}</span>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })}
+                            </div>
                         </div>
                     )}
                 </div>
@@ -250,25 +252,27 @@ export const Estadisticas = () => {
                     {orders.length === 0 ? (
                         <div className="no-data-chart">No hay datos de pedidos registrados aún.</div>
                     ) : (
-                        <div className="bar-chart-container">
-                            {ordersByDayChartData.map((item, index) => {
-                                const heightPercent = Math.round((item.value / maxOrdersByDay) * 100);
-                                return (
-                                    <div key={index} className="bar-column">
-                                        <div className="bar-tooltip">{item.value} {item.value === 1 ? 'pedido' : 'pedidos'}</div>
-                                        <div className="bar-wrapper">
-                                            <div 
-                                                className="bar-fill" 
-                                                style={{ 
-                                                    height: `${Math.max(heightPercent, 4)}%`,
-                                                    background: 'linear-gradient(180deg, #10b981 0%, #047857 100%)' 
-                                                }}
-                                            ></div>
+                        <div className="bar-chart-scroll">
+                            <div className="bar-chart-container">
+                                {ordersByDayChartData.map((item, index) => {
+                                    const heightPercent = Math.round((item.value / maxOrdersByDay) * 100);
+                                    return (
+                                        <div key={index} className="bar-column">
+                                            <div className="bar-tooltip">{item.value} {item.value === 1 ? 'pedido' : 'pedidos'}</div>
+                                            <div className="bar-wrapper">
+                                                <div 
+                                                    className="bar-fill" 
+                                                    style={{ 
+                                                        height: `${Math.max(heightPercent, 4)}%`,
+                                                        background: 'linear-gradient(180deg, #10b981 0%, #047857 100%)' 
+                                                    }}
+                                                ></div>
+                                            </div>
+                                            <span className="bar-label">{item.label.slice(0, 3)}</span>
                                         </div>
-                                        <span className="bar-label">{item.label.slice(0, 3)}</span>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })}
+                            </div>
                         </div>
                     )}
                 </div>

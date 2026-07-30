@@ -1,4 +1,4 @@
-import { db, auth } from './firebase';
+import { db, getActiveUsuarioId } from './firebase';
 import { useState, useEffect } from 'react';
 import { collection, addDoc, onSnapshot, query, deleteDoc, doc, where } from "firebase/firestore";
 import './mesas.css';
@@ -21,11 +21,11 @@ export const mesas = ({ setView, setSelectedMesa }: Props) => {
     const [pedidosCount, setPedidosCount] = useState<{ [key: string]: number }>({});
 
     useEffect(() => {
-        const user = auth.currentUser;
-        if (!user) return;
+        const usuarioId = getActiveUsuarioId();
+        if (!usuarioId) return;
 
         // Mesas listener
-        const qMesas = query(collection(db, "mesas"), where("usuarioId", "==", user.uid));
+        const qMesas = query(collection(db, "mesas"), where("usuarioId", "==", usuarioId));
         const unsubscribeMesas = onSnapshot(qMesas, (querySnapshot) => {
             const mesasArray: Mesa[] = [];
             querySnapshot.forEach((doc) => {
@@ -36,7 +36,7 @@ export const mesas = ({ setView, setSelectedMesa }: Props) => {
         });
 
         // Pedidos listener for counts
-        const qPedidos = query(collection(db, "pedidos"), where("usuarioId", "==", user.uid));
+        const qPedidos = query(collection(db, "pedidos"), where("usuarioId", "==", usuarioId));
         const unsubscribePedidos = onSnapshot(qPedidos, (querySnapshot) => {
             const counts: { [key: string]: number } = {};
             querySnapshot.forEach((doc) => {
@@ -61,8 +61,8 @@ export const mesas = ({ setView, setSelectedMesa }: Props) => {
                 ? Math.max(...mesasList.map(m => m.id)) + 1
                 : 1;
 
-            const user = auth.currentUser;
-            if (!user) {
+            const usuarioId = getActiveUsuarioId();
+            if (!usuarioId) {
                 setStatus("Error: Usuario no autenticado");
                 return;
             }
@@ -71,7 +71,7 @@ export const mesas = ({ setView, setSelectedMesa }: Props) => {
             await addDoc(collectionRef, {
                 nombre: `Mesa ${nextId}`,
                 id: nextId,
-                usuarioId: user.uid
+                usuarioId: usuarioId
             })
             setStatus(`¡Mesa ${nextId} creada exitosamente!`);
             setTimeout(() => setStatus(""), 3000);
@@ -153,4 +153,4 @@ export const mesas = ({ setView, setSelectedMesa }: Props) => {
     )
 }
 
-export default mesas
+export default mesas;

@@ -7,15 +7,15 @@
     width: 100vw;
     text-align: center;
     padding: 2rem;
-    background-color: #f8fafc;
-    color: #0f172a;
+    background-color: var(--bg, #f8fafc);
+    color: var(--text, #0f172a);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     box-sizing: border-box;
 }
 
 .cuenta-bloqueada-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--card, #ffffff);
+    border: 1px solid var(--border, #e2e8f0);
     border-radius: 24px;
     padding: 3rem;
     max-width: 480px;
@@ -25,6 +25,7 @@
     flex-direction: column;
     align-items: center;
     gap: 1.25rem;
+    box-sizing: border-box;
 }
 
 .cuenta-bloqueada-icon {
@@ -35,14 +36,14 @@
 .cuenta-bloqueada-card h1 {
     font-size: 1.75rem;
     font-weight: 800;
-    color: #0f172a;
+    color: var(--text, #0f172a);
     margin: 0;
     letter-spacing: -0.02em;
 }
 
 .cuenta-bloqueada-card p {
     font-size: 0.95rem;
-    color: #64748b;
+    color: var(--muted, #64748b);
     line-height: 1.5;
     margin: 0;
 }
@@ -56,11 +57,11 @@
 }
 
 .cuenta-bloqueada-btn {
-    padding: 12px 24px;
+    padding: 14px 24px;
     background-color: #25d366; /* WhatsApp green */
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     font-weight: 600;
     font-size: 0.95rem;
     cursor: pointer;
@@ -76,7 +77,12 @@
 
 .cuenta-bloqueada-btn:hover {
     filter: brightness(0.95);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+}
+
+.cuenta-bloqueada-btn.instagram {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    background-color: transparent !important;
 }
 
 .cuenta-bloqueada-btn.secondary {
@@ -87,4 +93,35 @@
 .cuenta-bloqueada-btn.secondary:hover {
     background-color: #e2e8f0;
     color: #0f172a;
+    transform: none;
+}
+
+/* Responsiveness for Tablets and Mobile */
+@media (max-width: 768px) {
+    .cuenta-bloqueada-page {
+        padding: 1rem;
+    }
+    
+    .cuenta-bloqueada-card {
+        padding: 2rem 1.5rem;
+        border-radius: 20px;
+        gap: 1rem;
+    }
+    
+    .cuenta-bloqueada-icon {
+        font-size: 2.5rem;
+    }
+    
+    .cuenta-bloqueada-card h1 {
+        font-size: 1.5rem;
+    }
+    
+    .cuenta-bloqueada-card p {
+        font-size: 0.9rem;
+    }
+    
+    .cuenta-bloqueada-btn {
+        padding: 12px 20px;
+        font-size: 0.9rem;
+    }
 }

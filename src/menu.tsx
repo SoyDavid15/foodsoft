@@ -1,6 +1,6 @@
-import { db, auth } from './firebase';
+import { db, getActiveUsuarioId } from './firebase';
 import { useState, useEffect } from 'react';
-import { collection, addDoc, onSnapshot, query, deleteDoc, doc, where } from "firebase/firestore";
+import { collection, addDoc, onSnapshot, query, deleteDoc, doc, where, updateDoc } from "firebase/firestore";
 import './menu.css';
 
 interface Producto {
@@ -13,10 +13,10 @@ interface Producto {
 }
 
 interface Props {
-    setView: (view: string) => void;
+    setView?: (view: string) => void;
 }
 
-export const Menu = ({ setView }: Props) => {
+export const Menu = ({}: Props) => {
 
     const [status, setStatus] = useState("");
     const [menuList, setMenuList] = useState<Producto[]>([]);
@@ -25,12 +25,18 @@ export const Menu = ({ setView }: Props) => {
     const [descripcion, setDescripcion] = useState("");
     const [imagen, setImagen] = useState("");
     const [imageFileName, setImageFileName] = useState("");
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [editNombre, setEditNombre] = useState("");
+    const [editPrecio, setEditPrecio] = useState("");
+    const [editDescripcion, setEditDescripcion] = useState("");
+    const [editImagen, setEditImagen] = useState("");
+    const [editImageFileName, setEditImageFileName] = useState("");
 
     useEffect(() => {
-        const user = auth.currentUser;
-        if (!user) return;
+        const usuarioId = getActiveUsuarioId();
+        if (!usuarioId) return;
 
-        const q = query(collection(db, "menu"), where("usuarioId", "==", user.uid));
+        const q = query(collection(db, "menu"), where("usuarioId", "==", usuarioId));
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             const menuArray: Producto[] = [];
             querySnapshot.forEach((doc) => {
@@ -132,8 +138,8 @@ export const Menu = ({ setView }: Props) => {
                 ? Math.max(...menuList.map(m => m.id)) + 1
                 : 1;
 
-            const user = auth.currentUser;
-            if (!user) {
+            const usuarioId = getActiveUsuarioId();
+            if (!usuarioId) {
                 setStatus("Error: Usuario no autenticado");
                 return;
             }
@@ -145,7 +151,7 @@ export const Menu = ({ setView }: Props) => {
                 descripcion: descripcionValida,
                 imagen: imagen,
                 id: nextId,
-                usuarioId: user.uid
+                usuarioId: usuarioId
             });
             setStatus(`Producto "${nuevoNombre}" guardado exitosamente!`);
             alert(`Producto "${nuevoNombre}" guardado exitosamente`);
@@ -170,6 +176,78 @@ export const Menu = ({ setView }: Props) => {
                 console.error(error);
                 setStatus("Error al eliminar: " + error.message);
             }
+        }
+    };
+
+    const iniciarEdicion = (producto: Producto) => {
+        setEditingId(producto.id_doc);
+        setEditNombre(producto.nombre);
+        setEditPrecio(producto.precio.toString());
+        setEditDescripcion(producto.descripcion);
+        setEditImagen(producto.imagen);
+        setEditImageFileName("");
+    };
+
+    const cancelarEdicion = () => {
+        setEditingId(null);
+        setEditNombre("");
+        setEditPrecio("");
+        setEditDescripcion("");
+        setEditImagen("");
+        setEditImageFileName("");
+    };
+
+    const handleEditImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setEditImageFileName(file.name);
+            try {
+                setStatus("Comprimiendo imagen...");
+                const compressedDataUrl = await compressImage(file);
+                setEditImagen(compressedDataUrl);
+                setStatus("");
+            } catch (error) {
+                console.error("Error compressing image:", error);
+                setStatus("Error al procesar la imagen");
+            }
+        }
+    };
+
+    const guardarEdicion = async (id_doc: string) => {
+        if (!editNombre || !editPrecio || !editDescripcion) {
+            setStatus("Por favor, complete todos los campos");
+            return;
+        }
+
+        const precioNum = parseFloat(editPrecio);
+        if (isNaN(precioNum) || precioNum <= 0) {
+            setStatus("El precio debe ser un número válido y mayor a 0");
+            return;
+        }
+
+        const descripcionValida = editDescripcion.trim();
+        if (!descripcionValida) {
+            setStatus("La descripción no puede estar vacía");
+            return;
+        }
+
+        setStatus("Actualizando...");
+        try {
+            const updateData: any = {
+                nombre: editNombre,
+                precio: precioNum,
+                descripcion: descripcionValida,
+            };
+            if (editImagen) {
+                updateData.imagen = editImagen;
+            }
+            await updateDoc(doc(db, "menu", id_doc), updateData);
+            setStatus("Producto actualizado exitosamente!");
+            cancelarEdicion();
+            setTimeout(() => setStatus(""), 3000);
+        } catch (error: any) {
+            console.error(error);
+            setStatus("Error al actualizar: " + error.message);
         }
     };
 
@@ -227,20 +305,68 @@ export const Menu = ({ setView }: Props) => {
 
             <div className='menu-list'>
                 {menuList.map((producto) => (
-                    <div className='menu-card' key={producto.id_doc}>
-                        {producto.imagen && (
-                            <div className="menu-card-image-wrapper">
-                                <img src={producto.imagen} alt={producto.nombre} className="menu-card-image" />
-                            </div>
+                    <div className={`menu-card ${editingId === producto.id_doc ? 'editing' : ''}`} key={producto.id_doc}>
+                        {editingId === producto.id_doc ? (
+                            <>
+                                <div className="file-input-wrapper">
+                                    <label className="file-input-label">
+                                        {editImageFileName ? `📁 ${editImageFileName}` : "📷 Cambiar Foto"}
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleEditImageChange}
+                                            style={{ display: 'none' }}
+                                        />
+                                    </label>
+                                </div>
+                                {editImagen && (
+                                    <div className="menu-card-image-wrapper">
+                                        <img src={editImagen} alt="Vista previa" className="menu-card-image" />
+                                    </div>
+                                )}
+                                <input
+                                    className="edit-input"
+                                    type="text"
+                                    value={editNombre}
+                                    onChange={(e) => setEditNombre(e.target.value)}
+                                    placeholder="Nombre"
+                                />
+                                <input
+                                    className="edit-input"
+                                    type="number"
+                                    value={editPrecio}
+                                    onChange={(e) => setEditPrecio(e.target.value)}
+                                    placeholder="Precio"
+                                />
+                                <input
+                                    className="edit-input"
+                                    type="text"
+                                    value={editDescripcion}
+                                    onChange={(e) => setEditDescripcion(e.target.value)}
+                                    placeholder="Descripción"
+                                />
+                                <div className="menu-card-actions">
+                                    <button className='menu-card-btn save' onClick={() => guardarEdicion(producto.id_doc)}>Guardar</button>
+                                    <button className='menu-card-btn cancel' onClick={cancelarEdicion}>Cancelar</button>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                {producto.imagen && (
+                                    <div className="menu-card-image-wrapper">
+                                        <img src={producto.imagen} alt={producto.nombre} className="menu-card-image" />
+                                    </div>
+                                )}
+                                <h3 className='menu-card-title'>{producto.nombre}</h3>
+                                <p className='menu-card-info'>ID: {producto.id}</p>
+                                <p className='menu-card-price'>${producto.precio.toFixed(2)}</p>
+                                <p className='menu-card-description'>{producto.descripcion}</p>
+                                <div className="menu-card-actions">
+                                    <button className='menu-card-btn edit' onClick={() => iniciarEdicion(producto)}>Editar</button>
+                                    <button className='menu-card-btn delete' onClick={() => eliminarProducto(producto.id_doc)}>Eliminar</button>
+                                </div>
+                            </>
                         )}
-                        <h3 className='menu-card-title'>{producto.nombre}</h3>
-                        <p className='menu-card-info'>ID: {producto.id}</p>
-                        <p className='menu-card-price'>${producto.precio.toFixed(2)}</p>
-                        <p className='menu-card-description'>{producto.descripcion}</p>
-                        <div className="menu-card-actions">
-                            <button className='menu-card-btn edit' onClick={() => setView("pedidos")}>Editar</button>
-                            <button className='menu-card-btn delete' onClick={() => eliminarProducto(producto.id_doc)}>Eliminar</button>
-                        </div>
                     </div>
                 ))}
             </div>

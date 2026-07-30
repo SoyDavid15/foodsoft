@@ -2,6 +2,7 @@ import './App.css'
 import Mesas from './mesas'
 import Pedidos from './pedidos'
 import Menu from './menu'
+import Inventario from './inventario'
 import Usuario from './usuario'
 import IniciarSesion from './iniciarSesion'
 
@@ -35,6 +36,10 @@ function App() {
   const [isBlocked, setIsBlocked] = useState(false);
   const [blockReason, setBlockReason] = useState("");
 
+  const handleSignOut = () => {
+    auth.signOut();
+  };
+
   useEffect(() => {
     let unsubscribeDoc: (() => void) | undefined;
 
@@ -46,25 +51,29 @@ function App() {
           unsubscribeDoc = onSnapshot(docRef, (docSnap) => {
             if (docSnap.exists()) {
               const data = docSnap.data();
+              if (!data.username || !data.pin) {
+                setPerfilCompletado(false);
+                setLoading(false);
+                return;
+              }
               setPerfilCompletado(true);
 
-              const plan = data.plan || 'gratis';
-
-              // Blocking logic
+              // Blocking logic: 15 days free trial from creation date
               const today = new Date();
               today.setHours(0, 0, 0, 0);
+
+              const createdAt = data.createdAt ? new Date(data.createdAt) : new Date();
+              createdAt.setHours(0, 0, 0, 0);
+
+              const trialEndDate = new Date(createdAt);
+              trialEndDate.setDate(trialEndDate.getDate() + 15);
 
               if (data.estado === "inactivo") {
                 setIsBlocked(true);
                 setBlockReason("Tu cuenta ha sido desactivada por el administrador.");
-              } else if (plan === "gratis") {
-                setIsBlocked(false);
-              } else if (data.fechaProximoPago && new Date(data.fechaProximoPago) < today) {
+              } else if (data.plan !== 'pro' && today > trialEndDate) {
                 setIsBlocked(true);
-                setBlockReason("La fecha límite de pago ha vencido. Por favor, regulariza tu situación.");
-              } else if (data.fechaVencimiento && new Date(data.fechaVencimiento) < today) {
-                setIsBlocked(true);
-                setBlockReason("Tu suscripción ha vencido.");
+                setBlockReason("Tu período de prueba gratuito de 15 días ha finalizado. Para continuar utilizando Foodsoft y mantener tu cuenta activa, debes realizar el pago de tu suscripción.");
               } else {
                 setIsBlocked(false);
               }
@@ -151,7 +160,7 @@ function App() {
   }
 
   if (isBlocked) {
-    return <CuentaBloqueada reason={blockReason} onSignOut={() => auth.signOut()} />;
+    return <CuentaBloqueada reason={blockReason} onSignOut={handleSignOut} />;
   }
 
   return (
@@ -162,6 +171,7 @@ function App() {
             <li><h1 style={{ cursor: 'pointer' }} onClick={() => setView("mesas")} title="Ir al panel">Foodsoft</h1></li>
             <li><button className={`nav-button ${view === 'mesas' ? 'active' : ''}`} onClick={() => setView("mesas")}>Mesas</button></li>
             <li><button className={`nav-button ${view === 'menu' ? 'active' : ''}`} onClick={() => setView("menu")}>Menú</button></li>
+            <li><button className={`nav-button ${view === 'inventario' ? 'active' : ''}`} onClick={() => setView("inventario")}>Inventario</button></li>
             <li><button className={`nav-button ${view === 'estadisticas' ? 'active' : ''}`} onClick={() => setView("estadisticas")}>Estadísticas</button></li>
             <li><button className={`nav-button ${view === 'usuario' ? 'active' : ''}`} onClick={() => setView("usuario")}>Usuario</button></li>
           </ul>
@@ -171,7 +181,8 @@ function App() {
         <div className='main-container'>
           {view === "mesas" && <Mesas setView={setView} setSelectedMesa={setSelectedMesa} />}
           {view === "pedidos" && <Pedidos mesa={selectedMesa} />}
-          {view === "menu" && <Menu setView={setView} />}
+          {view === "inventario" && <Inventario />}
+          {view === "menu" && <Menu />}
           {view === "estadisticas" && <Estadisticas />}
           {view === "usuario" && <Usuario setView={setView} />}
           {view === "contacto-pro" && <ContactoPro onBack={() => setView("usuario")} />}

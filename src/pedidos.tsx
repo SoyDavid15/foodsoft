@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { db, auth } from "./firebase";
-import { collection, query, where, onSnapshot, doc, updateDoc, deleteDoc, writeBatch } from "firebase/firestore";
+import { db, getActiveUsuarioId } from "./firebase";
+import { collection, query, where, onSnapshot, doc, updateDoc, deleteDoc, writeBatch, getDocs } from "firebase/firestore";
 import { QRCodeCanvas } from "qrcode.react";
 import "./pedidos.css";
 
@@ -56,7 +56,7 @@ export const Pedidos = ({ mesa }: { mesa: Mesa | null }) => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
     const [showPaidHistory, setShowPaidHistory] = useState(true);
-    const usuarioId = auth.currentUser?.uid;
+    const usuarioId = getActiveUsuarioId();
     const qrRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
@@ -81,13 +81,106 @@ export const Pedidos = ({ mesa }: { mesa: Mesa | null }) => {
         return () => unsubscribe();
     }, [mesa, usuarioId]);
 
+    const deducirInventarioPorPedido = async (order: Order) => {
+        if (!usuarioId) return;
+        try {
+            const invQuery = query(collection(db, "inventario"), where("usuarioId", "==", usuarioId));
+            const invSnapshot = await getDocs(invQuery);
+            const batch = writeBatch(db);
+
+            invSnapshot.forEach((invDoc) => {
+                const invData = invDoc.data();
+                const invNombre = (invData.nombre || "").trim().toLowerCase();
+
+                const matchingOrderItem = order.items.find(
+                    (oi) => (oi.nombre || "").trim().toLowerCase() === invNombre
+                );
+
+                if (matchingOrderItem) {
+                    const qtySold = (matchingOrderItem as any).cantidad || 1;
+                    const currentStock = invData.cantidad || 0;
+                    const newStock = Math.max(0, currentStock - qtySold);
+                    batch.update(invDoc.ref, { cantidad: newStock });
+                }
+            });
+
+            await batch.commit();
+        } catch (error) {
+            console.error("Error al deducir inventario:", error);
+        }
+    };
+
     const updateOrderStatus = async (orderId: string, newStatus: string) => {
         try {
             const orderRef = doc(db, "pedidos", orderId);
             await updateDoc(orderRef, { estado: newStatus });
+
+            if (newStatus === "pagado") {
+                const targetOrder = orders.find(o => o.id === orderId);
+                if (targetOrder) {
+                    await deducirInventarioPorPedido(targetOrder);
+                }
+            }
         } catch (error) {
             console.error("Error updating order status:", error);
         }
+    };
+
+    const imprimirTicket = (order: Order) => {
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) return;
+
+        const html = `
+            <html>
+                <head>
+                    <title>Ticket - Mesa ${mesa?.nombre}</title>
+                    <style>
+                        body { font-family: 'Courier New', monospace; font-size: 14px; width: 300px; margin: 0 auto; padding: 20px; color: #000; }
+                        h2 { text-align: center; margin-bottom: 5px; }
+                        p { text-align: center; margin-top: 0; font-size: 12px; }
+                        .divider { border-bottom: 1px dashed #000; margin: 10px 0; }
+                        .item-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+                        .total-row { display: flex; justify-content: space-between; font-weight: bold; margin-top: 10px; font-size: 16px; }
+                        .footer { text-align: center; margin-top: 20px; font-size: 11px; }
+                    </style>
+                </head>
+                <body>
+                    <h2>FOODSOFT</h2>
+                    <p>Comanda / Ticket de Venta</p>
+                    <div class="divider"></div>
+                    <p><strong>Mesa:</strong> ${mesa?.nombre}</p>
+                    <p><strong>Fecha:</strong> ${new Date(order.fecha).toLocaleString()}</p>
+                    <div class="divider"></div>
+                    <div>
+                        ${order.items.map(i => `
+                            <div class="item-row">
+                                <span>${(i as any).cantidad || 1}x ${i.nombre}</span>
+                                <span>$${((i.precio) * ((i as any).cantidad || 1)).toFixed(2)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="divider"></div>
+                    <div class="total-row">
+                        <span>TOTAL:</span>
+                        <span>$${order.total.toFixed(2)}</span>
+                    </div>
+                    ${order.nota ? `<p><strong>Nota:</strong> ${order.nota}</p>` : ''}
+                    <div class="divider"></div>
+                    <div class="footer">
+                        ¡Gracias por su visita!<br/>
+                        Powered by Foodsoft
+                    </div>
+                </body>
+            </html>
+        `;
+
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+        }, 500);
     };
 
     const deleteOrder = async (orderId: string) => {
@@ -216,8 +309,8 @@ export const Pedidos = ({ mesa }: { mesa: Mesa | null }) => {
                                         <div className="order-items-list">
                                             {order.items.map((item, idx) => (
                                                 <div key={idx} className="order-item-row">
-                                                    <span>{item.nombre}</span>
-                                                    <span>${item.precio.toFixed(2)}</span>
+                                                    <span>{(item as any).cantidad || 1}x {item.nombre}</span>
+                                                    <span>${(item.precio * ((item as any).cantidad || 1)).toFixed(2)}</span>
                                                 </div>
                                             ))}
                                         </div>
@@ -230,6 +323,13 @@ export const Pedidos = ({ mesa }: { mesa: Mesa | null }) => {
                                         {order.nota && <NoteDisplay text={order.nota} />}
                                     </div>
                                     <div className="order-actions">
+                                        <button 
+                                            className="action-btn print"
+                                            onClick={() => imprimirTicket(order)}
+                                            title="Imprimir Ticket / Comanda"
+                                        >
+                                            🖨️
+                                        </button>
                                         {order.estado === "pendiente" && (
                                             <button 
                                                 className="action-btn complete"
@@ -287,12 +387,12 @@ export const Pedidos = ({ mesa }: { mesa: Mesa | null }) => {
                                                     </div>
                                                     <div className="order-info">
                                                         <div className="order-items-list">
-                                                            {order.items.map((item, idx) => (
-                                                                <div key={idx} className="order-item-row">
-                                                                    <span>{item.nombre}</span>
-                                                                    <span>${item.precio.toFixed(2)}</span>
-                                                                </div>
-                                                            ))}
+                                                             {order.items.map((item, idx) => (
+                                                                 <div key={idx} className="order-item-row">
+                                                                     <span>{(item as any).cantidad || 1}x {item.nombre}</span>
+                                                                     <span>${(item.precio * ((item as any).cantidad || 1)).toFixed(2)}</span>
+                                                                 </div>
+                                                             ))}
                                                         </div>
                                                         <div className="order-total">
                                                             <strong>Total: ${order.total.toFixed(2)}</strong>
@@ -303,6 +403,13 @@ export const Pedidos = ({ mesa }: { mesa: Mesa | null }) => {
                                                         {order.nota && <NoteDisplay text={order.nota} />}
                                                     </div>
                                                     <div className="order-actions">
+                                                        <button 
+                                                            className="action-btn print"
+                                                            onClick={() => imprimirTicket(order)}
+                                                            title="Imprimir Ticket"
+                                                        >
+                                                            🖨️
+                                                        </button>
                                                         <button 
                                                             className="action-btn delete-single"
                                                             onClick={() => deleteOrder(order.id)}

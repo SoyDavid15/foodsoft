@@ -1,6 +1,6 @@
-import { auth } from "./firebase"
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
-import "./iniciarSesion.css"
+import { auth } from "./firebase";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import "./iniciarSesion.css";
 
 export const IniciarSesion = () => {
     const entrarConGooogle = async () => {
@@ -212,7 +212,7 @@ export const IniciarSesion = () => {
                             <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.19C.43 8.11 0 9.81 0 12s.43 3.89 1.19 5.42l4.09-3.15z"/>
                             <path fill="#EA4335" d="M12 4.75c1.76 0 3.34.61 4.58 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.17 2.68 1.19 6.58l4.09 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
                         </svg>
-                        Acceder al Sistema
+                        Acceder con Cuenta Google
                     </button>
                 </div>
             </section>

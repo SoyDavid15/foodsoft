@@ -1,7 +1,9 @@
 .pedidos-container {
+    width: 100%;
     max-width: 1300px;
     margin: 0 auto;
     padding: 0;
+    box-sizing: border-box;
     display: flex;
     flex-direction: row;
     gap: 2.5rem;
@@ -81,6 +83,8 @@
     transition: all 0.2s ease;
     border: 1px solid var(--border);
     box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    box-sizing: border-box;
+    max-width: 100%;
 }
 
 .order-card:hover {
@@ -198,6 +202,8 @@
 
 .qr-section {
     width: 320px;
+    max-width: 100%;
+    box-sizing: border-box;
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 20px;
@@ -272,6 +278,20 @@
     .qr-section {
         width: 100%;
         position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .order-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+        padding: 1rem;
+    }
+    .order-actions {
+        justify-content: flex-end;
+        width: 100%;
+        flex-wrap: wrap;
     }
 }
 
