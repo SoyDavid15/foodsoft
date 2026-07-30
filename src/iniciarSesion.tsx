@@ -7,6 +7,7 @@ export const IniciarSesion = () => {
         try {
             const provider = new GoogleAuthProvider();
             await signInWithPopup(auth, provider);
+            window.location.href = '/panel';
         } catch (error) {
             console.error(error);
         }
@@ -15,12 +16,12 @@ export const IniciarSesion = () => {
     return (
         <div className="landing-page">
             <header className="landing-nav">
-                <div className="landing-logo">
+                <div className="landing-logo" style={{ cursor: 'pointer' }} onClick={() => window.location.href = '/'}>
                     <h1>Foodsoft</h1>
                 </div>
                 <div className="landing-nav-actions">
-                    <button className="landing-login-btn" onClick={entrarConGooogle}>
-                        Iniciar Sesión con Google
+                    <button className="landing-login-btn" onClick={() => window.location.href = '/panel'}>
+                        Acceder al Panel
                     </button>
                 </div>
             </header>
@@ -35,7 +36,7 @@ export const IniciarSesion = () => {
                         Foodsoft automatiza tus mesas con códigos QR, menú digital con fotos y compresión integrada, pedidos en tiempo real y estadísticas financieras avanzadas.
                     </p>
                     <div className="landing-cta-box">
-                        <p className="landing-cta-text">Inicia sesión o regístrate para comenzar</p>
+                        <p className="landing-cta-text">Comienza ahora a administrar tu local</p>
                         <button className="google-signin-btn" onClick={entrarConGooogle}>
                             <svg className="google-icon" viewBox="0 0 24 24" width="20" height="20">
                                 <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
@@ -43,7 +44,7 @@ export const IniciarSesion = () => {
                                 <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.19C.43 8.11 0 9.81 0 12s.43 3.89 1.19 5.42l4.09-3.15z"/>
                                 <path fill="#EA4335" d="M12 4.75c1.76 0 3.34.61 4.58 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.17 2.68 1.19 6.58l4.09 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
                             </svg>
-                            Registrarse / Iniciar sesión con Google
+                            Acceder al Panel con Google
                         </button>
                     </div>
                 </div>

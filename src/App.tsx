@@ -12,7 +12,7 @@ import ContactoPro from './contactoPro'
 import Estadisticas from './estadisticas'
 import { useState, useEffect } from 'react'
 import { auth, db } from './firebase'
-import { onAuthStateChanged, type User } from 'firebase/auth'
+import { onAuthStateChanged, type User, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import { doc, onSnapshot } from 'firebase/firestore'
 
 function App() {
@@ -20,6 +20,10 @@ function App() {
 
   if (pathname === '/hacer-pedido') {
     return <HacerPedido />;
+  }
+
+  if (pathname === '/' || pathname === '/home') {
+    return <IniciarSesion />;
   }
 
   const [view, setView] = useState("mesas");
@@ -90,6 +94,15 @@ function App() {
     };
   }, []);
 
+  const entrarConGooogle = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f8f9fa' }}>
@@ -99,7 +112,23 @@ function App() {
   }
 
   if (!user) {
-    return <IniciarSesion />;
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f8f9fa', gap: '1.5rem', fontFamily: 'Inter, sans-serif' }}>
+        <div style={{ background: 'white', padding: '2.5rem', borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 10px 30px rgba(0,0,0,0.04)', textAlign: 'center', maxWidth: '400px', width: '100%' }}>
+          <h2 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', marginBottom: '0.5rem' }}>Panel Foodsoft</h2>
+          <p style={{ color: '#64748b', fontSize: '0.95rem', marginBottom: '1.5rem' }}>Inicia sesión para acceder a tu panel de control</p>
+          <button 
+            onClick={entrarConGooogle}
+            style={{ background: '#0f172a', color: 'white', border: 'none', padding: '0.85rem 1.5rem', fontSize: '0.95rem', fontWeight: '600', borderRadius: '12px', cursor: 'pointer', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+          >
+            Iniciar sesión con Google
+          </button>
+          <div style={{ marginTop: '1.5rem' }}>
+            <a href="/" style={{ color: '#2563eb', textDecoration: 'none', fontSize: '0.9rem', fontWeight: '600' }}>← Volver a la página principal</a>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!perfilCompletado) {
@@ -115,7 +144,7 @@ function App() {
       <header>
         <nav className='nav'>
           <ul className='nav-list'>
-            <li><h1 style={{ cursor: 'pointer' }} onClick={() => auth.signOut()} title="Cerrar sesión y volver al inicio">Foodsoft</h1></li>
+            <li><h1 style={{ cursor: 'pointer' }} onClick={() => window.location.href = '/'} title="Ir a la página principal">Foodsoft</h1></li>
             <li><button className={`nav-button ${view === 'mesas' ? 'active' : ''}`} onClick={() => setView("mesas")}>Mesas</button></li>
             <li><button className={`nav-button ${view === 'menu' ? 'active' : ''}`} onClick={() => setView("menu")}>Menú</button></li>
             <li><button className={`nav-button ${view === 'estadisticas' ? 'active' : ''}`} onClick={() => setView("estadisticas")}>Estadísticas</button></li>
