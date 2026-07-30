@@ -182,9 +182,25 @@
     background-color: #fee2e2;
 }
 
-@media (max-width: 600px) {
-    .menu-list {
+@media (max-width: 768px) {
+    .add-product-container {
+        padding: 1.25rem;
+        border-radius: 12px;
+    }
+    .menu-add {
         grid-template-columns: 1fr;
+        gap: 0.85rem;
+    }
+    .menu-add input, .file-input-label {
+        width: 100%;
+        min-height: 48px;
+        font-size: 1rem;
+    }
+    .menu-add-button {
+        width: 100%;
+        padding: 14px;
+        font-size: 1rem;
+        min-height: 48px;
     }
 }
 

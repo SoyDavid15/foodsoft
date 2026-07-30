@@ -47,8 +47,15 @@ export const Estadisticas = () => {
 
     if (loading) {
         return (
-            <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--muted)' }}>
-                <p>Cargando estadísticas y datos de ventas...</p>
+            <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
+                <div className="skeleton" style={{ height: '40px', width: '300px', marginBottom: '2rem' }}></div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+                    {[1, 2, 3, 4, 5].map(i => <div key={i} className="skeleton" style={{ height: '120px' }}></div>)}
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <div className="skeleton" style={{ height: '300px' }}></div>
+                    <div className="skeleton" style={{ height: '300px' }}></div>
+                </div>
             </div>
         );
     }

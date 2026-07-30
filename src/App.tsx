@@ -4,10 +4,11 @@ import Pedidos from './pedidos'
 import Menu from './menu'
 import Usuario from './usuario'
 import IniciarSesion from './iniciarSesion'
+
 import { crearUsuario as CrearUsuario } from './crearUsuario'
 import CuentaBloqueada from './cuentaBloqueada'
 import HacerPedido from './hacerPedido'
-import AdSenseBanner from './AdSenseBanner'
+
 import ContactoPro from './contactoPro'
 import Estadisticas from './estadisticas'
 import { useState, useEffect } from 'react'
@@ -33,7 +34,6 @@ function App() {
   const [perfilCompletado, setPerfilCompletado] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
   const [blockReason, setBlockReason] = useState("");
-  const [userPlan, setUserPlan] = useState("gratis");
 
   useEffect(() => {
     let unsubscribeDoc: (() => void) | undefined;
@@ -49,11 +49,10 @@ function App() {
               setPerfilCompletado(true);
 
               const plan = data.plan || 'gratis';
-              setUserPlan(plan);
 
               // Blocking logic
               const today = new Date();
-              today.setHours(0, 0, 0, 0); // Normalized to start of day
+              today.setHours(0, 0, 0, 0);
 
               if (data.estado === "inactivo") {
                 setIsBlocked(true);
@@ -83,7 +82,6 @@ function App() {
         if (unsubscribeDoc) unsubscribeDoc();
         setPerfilCompletado(false);
         setIsBlocked(false);
-        setUserPlan("gratis");
         setLoading(false);
       }
     });
@@ -105,8 +103,25 @@ function App() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f8f9fa' }}>
-        <p>Cargando aplicación...</p>
+      <div className="skeleton-screen">
+        <nav className="skeleton-nav">
+          <div className="skeleton" style={{ height: '30px', width: '150px', marginBottom: '1.5rem', borderRadius: '6px' }}></div>
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="skeleton" style={{ height: '40px', width: '100%', borderRadius: '8px' }}></div>
+          ))}
+        </nav>
+        <main className="skeleton-content">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+            <div className="skeleton" style={{ height: '35px', width: '180px', borderRadius: '6px' }}></div>
+            <div className="skeleton" style={{ height: '35px', width: '140px', borderRadius: '6px' }}></div>
+          </div>
+          <div className="skeleton" style={{ height: '16px', width: '350px', borderRadius: '6px', marginBottom: '0.5rem' }}></div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="skeleton" style={{ height: '150px', borderRadius: '12px' }}></div>
+            ))}
+          </div>
+        </main>
       </div>
     );
   }
@@ -144,7 +159,7 @@ function App() {
       <header>
         <nav className='nav'>
           <ul className='nav-list'>
-            <li><h1 style={{ cursor: 'pointer' }} onClick={() => window.location.href = '/'} title="Ir a la página principal">Foodsoft</h1></li>
+            <li><h1 style={{ cursor: 'pointer' }} onClick={() => setView("mesas")} title="Ir al panel">Foodsoft</h1></li>
             <li><button className={`nav-button ${view === 'mesas' ? 'active' : ''}`} onClick={() => setView("mesas")}>Mesas</button></li>
             <li><button className={`nav-button ${view === 'menu' ? 'active' : ''}`} onClick={() => setView("menu")}>Menú</button></li>
             <li><button className={`nav-button ${view === 'estadisticas' ? 'active' : ''}`} onClick={() => setView("estadisticas")}>Estadísticas</button></li>
@@ -152,9 +167,8 @@ function App() {
           </ul>
         </nav>
       </header>
-       <main>
+      <main>
         <div className='main-container'>
-          {userPlan === 'gratis' && <AdSenseBanner />}
           {view === "mesas" && <Mesas setView={setView} setSelectedMesa={setSelectedMesa} />}
           {view === "pedidos" && <Pedidos mesa={selectedMesa} />}
           {view === "menu" && <Menu setView={setView} />}

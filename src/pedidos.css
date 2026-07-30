@@ -303,3 +303,36 @@
     align-items: center;
     cursor: pointer;
 }
+
+.history-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.history-date-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background: #f8fafc;
+    padding: 1.25rem;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+}
+
+.history-date-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.date-count {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--muted);
+}
