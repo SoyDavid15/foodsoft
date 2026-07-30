@@ -19,6 +19,8 @@ export const mesas = ({ setView, setSelectedMesa }: Props) => {
     const [status, setStatus] = useState("");
     const [mesasList, setMesasList] = useState<Mesa[]>([]);
     const [pedidosCount, setPedidosCount] = useState<{ [key: string]: number }>({});
+    const [showForm, setShowForm] = useState(false);
+    const [nombreMesa, setNombreMesa] = useState("");
 
     useEffect(() => {
         const usuarioId = getActiveUsuarioId();
@@ -54,7 +56,22 @@ export const mesas = ({ setView, setSelectedMesa }: Props) => {
         };
     }, []);
 
-    const guardarMesa = async () => {
+    const abrirFormulario = () => {
+        const nextId = mesasList.length > 0
+            ? Math.max(...mesasList.map(m => m.id)) + 1
+            : 1;
+        setNombreMesa(`Mesa ${nextId}`);
+        setShowForm(true);
+        setStatus("");
+    };
+
+    const guardarMesa = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!nombreMesa.trim()) {
+            setStatus("Error: El nombre de la mesa no puede estar vacío");
+            return;
+        }
+
         setStatus("Guardando...");
         try {
             const nextId = mesasList.length > 0
@@ -69,11 +86,13 @@ export const mesas = ({ setView, setSelectedMesa }: Props) => {
 
             const collectionRef = collection(db, "mesas");
             await addDoc(collectionRef, {
-                nombre: `Mesa ${nextId}`,
+                nombre: nombreMesa.trim(),
                 id: nextId,
                 usuarioId: usuarioId
             })
-            setStatus(`¡Mesa ${nextId} creada exitosamente!`);
+            setStatus(`¡${nombreMesa.trim()} creada exitosamente!`);
+            setShowForm(false);
+            setNombreMesa("");
             setTimeout(() => setStatus(""), 3000);
         } catch (error: any) {
             console.error(error);
@@ -102,9 +121,11 @@ export const mesas = ({ setView, setSelectedMesa }: Props) => {
                     <h2>Mesas</h2>
                     <p className="mesas-subtitle">Administra las mesas de tu local y visualiza sus pedidos activos.</p>
                 </div>
-                <button className="mesa-button" onClick={guardarMesa} style={{ width: 'auto', padding: '12px 20px' }}>
-                    + Nueva Mesa
-                </button>
+                {!showForm && (
+                    <button className="mesa-button" onClick={abrirFormulario} style={{ width: 'auto', padding: '12px 20px' }}>
+                        + Nueva Mesa
+                    </button>
+                )}
             </div>
 
             {status && (
@@ -113,10 +134,33 @@ export const mesas = ({ setView, setSelectedMesa }: Props) => {
                 </p>
             )}
 
-            {mesasList.length === 0 ? (
+            {showForm && (
+                <form onSubmit={guardarMesa} className="mesa-form-card">
+                    <h3>Crear nueva mesa</h3>
+                    <div className="mesa-form-inputs">
+                        <input
+                            type="text"
+                            value={nombreMesa}
+                            onChange={(e) => setNombreMesa(e.target.value)}
+                            placeholder="Nombre de la mesa (ej. Mesa 1, Terraza)"
+                            autoFocus
+                        />
+                    </div>
+                    <div className="mesa-form-actions">
+                        <button type="submit" className="mesa-button">
+                            Guardar Mesa
+                        </button>
+                        <button type="button" className="mesa-button eliminar" onClick={() => setShowForm(false)}>
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            )}
+
+            {mesasList.length === 0 && !showForm ? (
                 <div className="empty-mesas">
                     <p>No tienes mesas creadas aún.</p>
-                    <button className="mesa-button" onClick={guardarMesa} style={{ width: 'auto', display: 'inline-block' }}>
+                    <button className="mesa-button" onClick={abrirFormulario} style={{ width: 'auto', display: 'inline-block' }}>
                         Crear primera mesa
                     </button>
                 </div>
