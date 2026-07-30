@@ -24,6 +24,8 @@ export const IniciarSesion = () => {
                     <a href="#beneficios">Arquitectura</a>
                     <a href="#comparativa">Eficiencia Operativa</a>
                     <a href="#funciones">Módulos</a>
+                    <a href="https://www.instagram.com/clikea2026/" target="_blank" rel="noopener noreferrer" className="nav-social-link instagram">Instagram</a>
+                    <a href="https://clikea.vercel.app" target="_blank" rel="noopener noreferrer" className="nav-social-link web">Visitar Clikea</a>
                 </nav>
                 <div className="landing-nav-actions">
                     <button className="landing-login-btn" onClick={entrarConGooogle}>
@@ -82,7 +84,7 @@ export const IniciarSesion = () => {
                         <div className="mockup-grid">
                             <div className="mockup-item">
                                 <span className="item-index">M-04</span>
-                                <div className="item-details">
+                                <div className="mockup-details">
                                     <h4>Mesa 04 · Salón Principal</h4>
                                     <p>3 ítems en preparación activa</p>
                                 </div>
@@ -90,7 +92,7 @@ export const IniciarSesion = () => {
                             </div>
                             <div className="mockup-item">
                                 <span className="item-index">M-08</span>
-                                <div className="item-details">
+                                <div className="mockup-details">
                                     <h4>Mesa 08 · Terraza</h4>
                                     <p>Cierre de cuenta pendiente</p>
                                 </div>
@@ -223,6 +225,19 @@ export const IniciarSesion = () => {
                     <div className="footer-logo">
                         <h3>Foodsoft<span>.</span></h3>
                         <p>Infraestructura de control y automatización gastronómica.</p>
+                    </div>
+                    <div className="footer-social-section">
+                        <h4>¡Síguenos y conoce más!</h4>
+                        <div className="footer-social-links">
+                            <a href="https://www.instagram.com/clikea2026/" target="_blank" rel="noopener noreferrer" className="social-badge instagram">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                                Instagram (@clikea2026)
+                            </a>
+                            <a href="https://clikea.vercel.app" target="_blank" rel="noopener noreferrer" className="social-badge web">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                                Sitio Web (clikea.vercel.app)
+                            </a>
+                        </div>
                     </div>
                     <div className="footer-copyright">
                         <p>&copy; {new Date().getFullYear()} Foodsoft. Todos los derechos reservados.</p>
