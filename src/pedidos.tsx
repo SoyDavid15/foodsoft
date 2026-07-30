@@ -55,6 +55,7 @@ const NoteDisplay = ({ text }: { text: string }) => {
 export const Pedidos = ({ mesa }: { mesa: Mesa | null }) => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
+    const [showPaidHistory, setShowPaidHistory] = useState(true);
     const usuarioId = auth.currentUser?.uid;
     const qrRef = useRef<HTMLCanvasElement>(null);
 
@@ -160,6 +161,9 @@ export const Pedidos = ({ mesa }: { mesa: Mesa | null }) => {
 
     const url = `${window.location.origin}/hacer-pedido?mesa=${mesa.id_doc}&usuario=${usuarioId}`;
 
+    const activeOrders = orders.filter(o => o.estado !== "pagado");
+    const paidOrders = orders.filter(o => o.estado === "pagado");
+
     return (
         <div className="pedidos-container">
             <div className="orders-section">
@@ -175,62 +179,119 @@ export const Pedidos = ({ mesa }: { mesa: Mesa | null }) => {
                     )}
                 </div>
 
-                {orders.length === 0 ? (
-                    <p className="no-orders">No hay pedidos registrados para esta mesa.</p>
-                ) : (
-                    <div className="orders-list">
-                        {orders.map((order) => (
-                            <div key={order.id} className={`order-card status-${order.estado} ${selectedOrders.includes(order.id) ? "selected" : ""}`}>
-                                <div className="order-selection">
-                                    <input 
-                                        type="checkbox" 
-                                        checked={selectedOrders.includes(order.id)}
-                                        onChange={() => toggleSelection(order.id)}
-                                    />
+                {/* Active Orders Section */}
+                <div className="orders-subsection">
+                    <h4 className="subsection-title">Pedidos Activos ({activeOrders.length})</h4>
+                    {activeOrders.length === 0 ? (
+                        <p className="no-orders">No hay pedidos activos para esta mesa.</p>
+                    ) : (
+                        <div className="orders-list">
+                            {activeOrders.map((order) => (
+                                <div key={order.id} className={`order-card status-${order.estado} ${selectedOrders.includes(order.id) ? "selected" : ""}`}>
+                                    <div className="order-selection">
+                                        <input 
+                                            type="checkbox" 
+                                            checked={selectedOrders.includes(order.id)}
+                                            onChange={() => toggleSelection(order.id)}
+                                        />
+                                    </div>
+                                    <div className="order-info">
+                                        <div className="order-items-list">
+                                            {order.items.map((item, idx) => (
+                                                <div key={idx} className="order-item-row">
+                                                    <span>{item.nombre}</span>
+                                                    <span>${item.precio.toFixed(2)}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className="order-total">
+                                            <strong>Total: ${order.total.toFixed(2)}</strong>
+                                            <span className={`status-badge ${order.estado}`}>
+                                                {order.estado.toUpperCase()}
+                                            </span>
+                                        </div>
+                                        {order.nota && <NoteDisplay text={order.nota} />}
+                                    </div>
+                                    <div className="order-actions">
+                                        {order.estado === "pendiente" && (
+                                            <button 
+                                                className="action-btn complete"
+                                                onClick={() => updateOrderStatus(order.id, "listo")}
+                                            >
+                                                Listo
+                                            </button>
+                                        )}
+                                        {order.estado === "listo" && (
+                                            <button 
+                                                className="action-btn pay"
+                                                onClick={() => updateOrderStatus(order.id, "pagado")}
+                                            >
+                                                Pagado
+                                            </button>
+                                        )}
+                                        <button 
+                                            className="action-btn delete-single"
+                                            onClick={() => deleteOrder(order.id)}
+                                        >
+                                            🗑️
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="order-info">
-                                    <div className="order-items-list">
-                                        {order.items.map((item, idx) => (
-                                            <div key={idx} className="order-item-row">
-                                                <span>{item.nombre}</span>
-                                                <span>${item.precio.toFixed(2)}</span>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Paid Orders History Section */}
+                {paidOrders.length > 0 && (
+                    <div className="history-section">
+                        <div className="history-header" onClick={() => setShowPaidHistory(!showPaidHistory)}>
+                            <h4 className="subsection-title">Historial de Pedidos Pagados ({paidOrders.length})</h4>
+                            <button className="show-more-btn">
+                                {showPaidHistory ? "Ocultar ▲" : "Mostrar ▼"}
+                            </button>
+                        </div>
+                        {showPaidHistory && (
+                            <div className="orders-list">
+                                {paidOrders.map((order) => (
+                                    <div key={order.id} className={`order-card status-${order.estado} ${selectedOrders.includes(order.id) ? "selected" : ""}`}>
+                                        <div className="order-selection">
+                                            <input 
+                                                type="checkbox" 
+                                                checked={selectedOrders.includes(order.id)}
+                                                onChange={() => toggleSelection(order.id)}
+                                            />
+                                        </div>
+                                        <div className="order-info">
+                                            <div className="order-items-list">
+                                                {order.items.map((item, idx) => (
+                                                    <div key={idx} className="order-item-row">
+                                                        <span>{item.nombre}</span>
+                                                        <span>${item.precio.toFixed(2)}</span>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        ))}
+                                            <div className="order-total">
+                                                <strong>Total: ${order.total.toFixed(2)}</strong>
+                                                <span className={`status-badge ${order.estado}`}>
+                                                    {order.estado.toUpperCase()}
+                                                </span>
+                                            </div>
+                                            {order.nota && <NoteDisplay text={order.nota} />}
+                                        </div>
+                                        <div className="order-actions">
+                                            <button 
+                                                className="action-btn delete-single"
+                                                onClick={() => deleteOrder(order.id)}
+                                                title="Eliminar del historial"
+                                            >
+                                                🗑️
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div className="order-total">
-                                        <strong>Total: ${order.total.toFixed(2)}</strong>
-                                        <span className={`status-badge ${order.estado}`}>
-                                            {order.estado.toUpperCase()}
-                                        </span>
-                                    </div>
-                                    {order.nota && <NoteDisplay text={order.nota} />}
-                                </div>
-                                <div className="order-actions">
-                                    {order.estado === "pendiente" && (
-                                        <button 
-                                            className="action-btn complete"
-                                            onClick={() => updateOrderStatus(order.id, "listo")}
-                                        >
-                                            Listo
-                                        </button>
-                                    )}
-                                    {order.estado === "listo" && (
-                                        <button 
-                                            className="action-btn pay"
-                                            onClick={() => updateOrderStatus(order.id, "pagado")}
-                                        >
-                                            Pagado
-                                        </button>
-                                    )}
-                                    <button 
-                                        className="action-btn delete-single"
-                                        onClick={() => deleteOrder(order.id)}
-                                    >
-                                        🗑️
-                                    </button>
-                                </div>
+                                ))}
                             </div>
-                        ))}
+                        )}
                     </div>
                 )}
             </div>
@@ -262,4 +323,3 @@ export const Pedidos = ({ mesa }: { mesa: Mesa | null }) => {
 };
 
 export default Pedidos;
-

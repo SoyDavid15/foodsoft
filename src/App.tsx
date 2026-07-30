@@ -9,6 +9,7 @@ import CuentaBloqueada from './cuentaBloqueada'
 import HacerPedido from './hacerPedido'
 import AdSenseBanner from './AdSenseBanner'
 import ContactoPro from './contactoPro'
+import Estadisticas from './estadisticas'
 import { useState, useEffect } from 'react'
 import { auth, db } from './firebase'
 import { onAuthStateChanged, type User } from 'firebase/auth'
@@ -113,9 +114,10 @@ function App() {
         <nav className='nav'>
           <ul className='nav-list'>
             <li><h1>Foodsoft</h1></li>
-            <li><button className='nav-button' onClick={() => setView("mesas")}>Mesas</button></li>
-            <li><button className='nav-button' onClick={() => setView("menu")}>Menú</button></li>
-            <li><button className='nav-button' onClick={() => setView("usuario")}>Usuario</button></li>
+            <li><button className={`nav-button ${view === 'mesas' ? 'active' : ''}`} onClick={() => setView("mesas")}>Mesas</button></li>
+            <li><button className={`nav-button ${view === 'menu' ? 'active' : ''}`} onClick={() => setView("menu")}>Menú</button></li>
+            <li><button className={`nav-button ${view === 'estadisticas' ? 'active' : ''}`} onClick={() => setView("estadisticas")}>Estadísticas</button></li>
+            <li><button className={`nav-button ${view === 'usuario' ? 'active' : ''}`} onClick={() => setView("usuario")}>Usuario</button></li>
           </ul>
         </nav>
       </header>
@@ -125,6 +127,7 @@ function App() {
           {view === "mesas" && <Mesas setView={setView} setSelectedMesa={setSelectedMesa} />}
           {view === "pedidos" && <Pedidos mesa={selectedMesa} />}
           {view === "menu" && <Menu setView={setView} />}
+          {view === "estadisticas" && <Estadisticas />}
           {view === "usuario" && <Usuario setView={setView} />}
           {view === "contacto-pro" && <ContactoPro onBack={() => setView("usuario")} />}
         </div>

@@ -9,6 +9,7 @@ interface Producto {
     nombre: string;
     precio: number;
     descripcion: string;
+    imagen: string;
 }
 
 interface Props {
@@ -22,6 +23,8 @@ export const Menu = ({ setView }: Props) => {
     const [nuevoNombre, setNuevoNombre] = useState("");
     const [nuevoPrecio, setNuevoPrecio] = useState("");
     const [descripcion, setDescripcion] = useState("");
+    const [imagen, setImagen] = useState("");
+    const [imageFileName, setImageFileName] = useState("");
 
     useEffect(() => {
         const user = auth.currentUser;
@@ -31,7 +34,15 @@ export const Menu = ({ setView }: Props) => {
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             const menuArray: Producto[] = [];
             querySnapshot.forEach((doc) => {
-                menuArray.push({ id_doc: doc.id, id: doc.data().id, nombre: doc.data().nombre, precio: doc.data().precio, descripcion: doc.data().descripcion });
+                const data = doc.data();
+                menuArray.push({
+                    id_doc: doc.id,
+                    id: data.id,
+                    nombre: data.nombre,
+                    precio: data.precio,
+                    descripcion: data.descripcion,
+                    imagen: data.imagen || ""
+                });
             });
             menuArray.sort((a, b) => a.id - b.id);
             setMenuList(menuArray);
@@ -40,9 +51,66 @@ export const Menu = ({ setView }: Props) => {
         return () => unsubscribe();
     }, []);
 
+    const compressImage = (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target?.result as string;
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    const MAX_WIDTH = 600;
+                    const MAX_HEIGHT = 600;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext("2d");
+                    ctx?.drawImage(img, 0, 0, width, height);
+
+                    // Compress to JPEG with 0.7 quality
+                    const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
+                    resolve(dataUrl);
+                };
+                img.onerror = (error) => reject(error);
+            };
+            reader.onerror = (error) => reject(error);
+        });
+    };
+
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setImageFileName(file.name);
+            try {
+                setStatus("Comprimiendo imagen...");
+                const compressedDataUrl = await compressImage(file);
+                setImagen(compressedDataUrl);
+                setStatus("");
+            } catch (error) {
+                console.error("Error compressing image:", error);
+                setStatus("Error al procesar la imagen");
+            }
+        }
+    };
+
     const guardarProducto = async () => {
-        if (!nuevoNombre || !nuevoPrecio) {
-            setStatus("Por favor, complete todos los campos");
+        if (!nuevoNombre || !nuevoPrecio || !descripcion || !imagen) {
+            setStatus("Por favor, complete todos los campos y sube una foto del producto");
             return;
         }
 
@@ -57,7 +125,6 @@ export const Menu = ({ setView }: Props) => {
             setStatus("La descripción no puede estar vacía");
             return;
         }
-
 
         setStatus("Guardando...");
         try {
@@ -76,19 +143,22 @@ export const Menu = ({ setView }: Props) => {
                 nombre: nuevoNombre,
                 precio: precioNum,
                 descripcion: descripcionValida,
+                imagen: imagen,
                 id: nextId,
                 usuarioId: user.uid
-            })
+            });
             setStatus(`Producto "${nuevoNombre}" guardado exitosamente!`);
             alert(`Producto "${nuevoNombre}" guardado exitosamente`);
             setNuevoNombre("");
             setNuevoPrecio("");
             setDescripcion("");
+            setImagen("");
+            setImageFileName("");
         } catch (error: any) {
             console.error(error);
             setStatus("Error al guardar: " + error.message);
         }
-    }
+    };
 
     const eliminarProducto = async (id_doc: string) => {
         const confirmar = window.confirm("¿Estás seguro de que deseas eliminar este producto?");
@@ -128,12 +198,28 @@ export const Menu = ({ setView }: Props) => {
                         value={descripcion}
                         onChange={(e) => setDescripcion(e.target.value)}
                     />
+                    <div className="file-input-wrapper">
+                        <label className="file-input-label">
+                            {imageFileName ? `📁 ${imageFileName}` : "📷 Subir Foto del Producto *"}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                style={{ display: 'none' }}
+                            />
+                        </label>
+                    </div>
                 </div>
+                {imagen && (
+                    <div className="image-preview-container">
+                        <img src={imagen} alt="Vista previa" className="image-preview" />
+                    </div>
+                )}
                 <button onClick={guardarProducto} className='menu-add-button'>
                     Guardar Producto
                 </button>
                 {status && (
-                    <p className={`status-message ${status.includes('Error') ? 'error' : 'success'}`}>
+                    <p className={`status-message ${status.includes('Error') || status.includes('Por favor') || status.includes('El precio') || status.includes('La descripción') || status.includes('procesar') ? 'error' : 'success'}`}>
                         {status}
                     </p>
                 )}
@@ -142,6 +228,11 @@ export const Menu = ({ setView }: Props) => {
             <div className='menu-list'>
                 {menuList.map((producto) => (
                     <div className='menu-card' key={producto.id_doc}>
+                        {producto.imagen && (
+                            <div className="menu-card-image-wrapper">
+                                <img src={producto.imagen} alt={producto.nombre} className="menu-card-image" />
+                            </div>
+                        )}
                         <h3 className='menu-card-title'>{producto.nombre}</h3>
                         <p className='menu-card-info'>ID: {producto.id}</p>
                         <p className='menu-card-price'>${producto.precio.toFixed(2)}</p>
@@ -154,6 +245,6 @@ export const Menu = ({ setView }: Props) => {
                 ))}
             </div>
         </div>
-    )
-}
-export default Menu;
+    );
+};
+export default Menu;

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { db } from "./firebase";
 import { collection, onSnapshot, query, where, addDoc } from "firebase/firestore";
 import CarritoPedidos from "./carritoPedidos";
+import "./hacerPedido.css";
 
 interface Producto {
     id_doc: string;
@@ -9,6 +10,7 @@ interface Producto {
     nombre: string;
     precio: number;
     descripcion: string;
+    imagen?: string;
 }
 
 export const HacerPedido = () => {
@@ -31,12 +33,14 @@ export const HacerPedido = () => {
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const items: Producto[] = [];
             snapshot.forEach((doc) => {
+                const data = doc.data();
                 items.push({
                     id_doc: doc.id,
-                    id: doc.data().id,
-                    nombre: doc.data().nombre,
-                    precio: doc.data().precio,
-                    descripcion: doc.data().descripcion,
+                    id: data.id,
+                    nombre: data.nombre,
+                    precio: data.precio,
+                    descripcion: data.descripcion,
+                    imagen: data.imagen || "",
                 });
             });
             items.sort((a, b) => a.id - b.id);
@@ -85,11 +89,11 @@ export const HacerPedido = () => {
     };
 
     if (!usuarioId || !mesaId) {
-        return <div><p>Enlace inválido. Escanea el QR de tu mesa.</p></div>;
+        return <div style={{ padding: '2rem', textAlign: 'center' }}><p>Enlace inválido. Escanea el QR de tu mesa.</p></div>;
     }
 
     if (loading) {
-        return <div><p>Cargando menú...</p></div>;
+        return <div style={{ padding: '2rem', textAlign: 'center' }}><p>Cargando menú...</p></div>;
     }
 
     return (
@@ -108,9 +112,18 @@ export const HacerPedido = () => {
                 <ul className="menu-list">
                     {menuList.map((producto) => (
                         <li key={producto.id_doc} className="menu-item">
-                            <strong>{producto.nombre}</strong> — ${producto.precio.toFixed(2)}
-                            <br />
-                            <span>{producto.descripcion}</span>
+                            {producto.imagen && (
+                                <div className="menu-item-image-wrapper">
+                                    <img src={producto.imagen} alt={producto.nombre} className="menu-item-image" />
+                                </div>
+                            )}
+                            <div className="menu-item-content">
+                                <div className="menu-item-header">
+                                    <strong>{producto.nombre}</strong>
+                                    <span className="menu-item-price">${producto.precio.toFixed(2)}</span>
+                                </div>
+                                <span className="menu-item-description">{producto.descripcion}</span>
+                            </div>
                             <button
                                 className="add-button"
                                 onClick={() => addToCart(producto)}
