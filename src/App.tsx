@@ -10,7 +10,6 @@ import HacerPedido from './hacerPedido'
 import AdSenseBanner from './AdSenseBanner'
 import ContactoPro from './contactoPro'
 import Estadisticas from './estadisticas'
-import Home from './home'
 import { useState, useEffect } from 'react'
 import { auth, db } from './firebase'
 import { onAuthStateChanged, type User } from 'firebase/auth'
@@ -21,10 +20,6 @@ function App() {
 
   if (pathname === '/hacer-pedido') {
     return <HacerPedido />;
-  }
-
-  if (pathname === '/' || pathname === '/home') {
-    return <Home />;
   }
 
   const [view, setView] = useState("mesas");
@@ -120,7 +115,7 @@ function App() {
       <header>
         <nav className='nav'>
           <ul className='nav-list'>
-            <li><h1 style={{ cursor: 'pointer' }} onClick={() => window.location.href = '/'}>Foodsoft</h1></li>
+            <li><h1 style={{ cursor: 'pointer' }} onClick={() => auth.signOut()} title="Cerrar sesión y volver al inicio">Foodsoft</h1></li>
             <li><button className={`nav-button ${view === 'mesas' ? 'active' : ''}`} onClick={() => setView("mesas")}>Mesas</button></li>
             <li><button className={`nav-button ${view === 'menu' ? 'active' : ''}`} onClick={() => setView("menu")}>Menú</button></li>
             <li><button className={`nav-button ${view === 'estadisticas' ? 'active' : ''}`} onClick={() => setView("estadisticas")}>Estadísticas</button></li>
