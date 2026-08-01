@@ -1,4 +1,4 @@
-import './App.css'
+﻿import './App.css'
 import Mesas from './mesas'
 import Pedidos from './pedidos'
 import Menu from './menu'
@@ -51,7 +51,7 @@ function App() {
           unsubscribeDoc = onSnapshot(docRef, (docSnap) => {
             if (docSnap.exists()) {
               const data = docSnap.data();
-              if (!data.username || !data.pin) {
+              if (!data.username || !data.nombre || !data.direccion) {
                 setPerfilCompletado(false);
                 setLoading(false);
                 return;
@@ -158,7 +158,7 @@ function App() {
             Iniciar sesión con Google
           </button>
           <div style={{ marginTop: '1.5rem' }}>
-            <a href="/" style={{ color: '#2563eb', textDecoration: 'none', fontSize: '0.9rem', fontWeight: '600' }}>← Volver a la página principal</a>
+            <a href="/" style={{ color: '#2563eb', textDecoration: 'none', fontSize: '0.9rem', fontWeight: '600' }}>â† Volver a la página principal</a>
           </div>
         </div>
       </div>
@@ -203,3 +203,4 @@ function App() {
 }
 
 export default App
+
