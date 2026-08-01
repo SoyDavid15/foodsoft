@@ -40,11 +40,12 @@ export const ContactoPro = ({ onBack }: Props) => {
         setLoadingPayment(true);
         try {
             const reference = `PRO-${currentUser.uid}-${Date.now()}`;
-            const amount = 50000; // $50,000 COP
+            const amount = 69000; // $69,000 COP
             const currency = "COP";
             const customerEmail = currentUser.email || "cliente@foodsoft.co";
 
-            const response = await fetch("http://localhost:8000/api/v1/payments/create-intent", {
+            const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+            const response = await fetch(`${apiUrl}/api/v1/payments/create-intent`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -126,7 +127,7 @@ export const ContactoPro = ({ onBack }: Props) => {
                 <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '1.25rem 1.5rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                         <div style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>Plan Mensual</div>
-                        <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>$50.000 <span style={{ fontSize: '0.9rem', fontWeight: 500, color: '#64748b' }}>COP / mes</span></div>
+                        <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>$69.000 <span style={{ fontSize: '0.9rem', fontWeight: 500, color: '#64748b' }}>COP / mes</span></div>
                     </div>
                     <div style={{ background: '#dcfce7', color: '#166534', padding: '6px 12px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 700 }}>
                         ✨ Activación Inmediata

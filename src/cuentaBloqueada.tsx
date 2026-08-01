@@ -40,11 +40,12 @@ export const CuentaBloqueada = ({ reason, onSignOut }: Props) => {
         setLoadingPayment(true);
         try {
             const reference = `PRO-${currentUser.uid}-${Date.now()}`;
-            const amount = 50000; // $50,000 COP
+            const amount = 69000; // $69,000 COP
             const currency = "COP";
             const customerEmail = currentUser.email || "cliente@foodsoft.co";
 
-            const response = await fetch("http://localhost:8000/api/v1/payments/create-intent", {
+            const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+            const response = await fetch(`${apiUrl}/api/v1/payments/create-intent`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -106,7 +107,7 @@ export const CuentaBloqueada = ({ reason, onSignOut }: Props) => {
                 <h1>Cuenta Bloqueada</h1>
                 <p>{reason}</p>
                 <p style={{ fontSize: '0.9rem', color: '#64748b', marginBottom: '1.25rem' }}>
-                    Realiza el pago de tu suscripción de 1 mes ($50.000 COP) para desbloquear inmediatamente tu cuenta y todas las funciones Pro.
+                    Realiza el pago de tu suscripción de 1 mes ($69.000 COP) para desbloquear inmediatamente tu cuenta y todas las funciones Pro.
                 </p>
                 
                 <div className="cuenta-bloqueada-actions">
@@ -116,7 +117,7 @@ export const CuentaBloqueada = ({ reason, onSignOut }: Props) => {
                         className="cuenta-bloqueada-btn"
                         style={{ background: '#2563eb', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 700, padding: '14px', fontSize: '0.95rem', borderRadius: '12px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
                     >
-                        {loadingPayment ? 'Conectando con Wompi...' : '💳 Pagar Suscripción 1 Mes ($50.000 COP)'}
+                        {loadingPayment ? 'Conectando con Wompi...' : '💳 Pagar Suscripción 1 Mes ($69.000 COP)'}
                     </button>
 
                     <div style={{ display: 'flex', gap: '0.75rem', width: '100%' }}>
