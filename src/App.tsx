@@ -58,25 +58,35 @@ function App() {
               }
               setPerfilCompletado(true);
 
-              // Blocking logic: 15 days free trial from creation date
-              const today = new Date();
-              today.setHours(0, 0, 0, 0);
+               // Blocking logic: 15 days free trial from creation date, or Pro subscription expiration
+               const today = new Date();
+               today.setHours(0, 0, 0, 0);
 
-              const createdAt = data.createdAt ? new Date(data.createdAt) : new Date();
-              createdAt.setHours(0, 0, 0, 0);
+               const createdAt = data.createdAt ? new Date(data.createdAt) : new Date();
+               createdAt.setHours(0, 0, 0, 0);
 
-              const trialEndDate = new Date(createdAt);
-              trialEndDate.setDate(trialEndDate.getDate() + 15);
+               const trialEndDate = new Date(createdAt);
+               trialEndDate.setDate(trialEndDate.getDate() + 15);
 
-              if (data.estado === "inactivo") {
-                setIsBlocked(true);
-                setBlockReason("Tu cuenta ha sido desactivada por el administrador.");
-              } else if (data.plan !== 'pro' && today > trialEndDate) {
-                setIsBlocked(true);
-                setBlockReason("Tu período de prueba gratuito de 15 días ha finalizado. Para continuar utilizando Foodsoft y mantener tu cuenta activa, debes realizar el pago de tu suscripción.");
-              } else {
-                setIsBlocked(false);
-              }
+               const fechaVencimiento = data.fechaVencimiento ? new Date(data.fechaVencimiento) : null;
+               if (fechaVencimiento) fechaVencimiento.setHours(0, 0, 0, 0);
+
+               if (data.estado === "inactivo") {
+                 setIsBlocked(true);
+                 setBlockReason("Tu cuenta ha sido desactivada por el administrador.");
+               } else if (data.plan === 'pro') {
+                 if (fechaVencimiento && today > fechaVencimiento) {
+                   setIsBlocked(true);
+                   setBlockReason("Tu suscripción Pro de 1 mes ha finalizado. Para continuar disfrutando de las ventajas Pro, debes realizar el pago de renovación.");
+                 } else {
+                   setIsBlocked(false);
+                 }
+               } else if (today > trialEndDate) {
+                 setIsBlocked(true);
+                 setBlockReason("Tu período de prueba gratuito de 15 días ha finalizado. Para continuar utilizando Foodsoft y mantener tu cuenta activa, debes realizar el pago de tu suscripción.");
+               } else {
+                 setIsBlocked(false);
+               }
             } else {
               setPerfilCompletado(false);
             }
