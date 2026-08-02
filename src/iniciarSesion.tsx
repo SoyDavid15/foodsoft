@@ -1,16 +1,67 @@
+import { useState } from "react";
 import { auth } from "./firebase";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { 
+    GoogleAuthProvider, 
+    signInWithPopup, 
+    signInWithEmailAndPassword, 
+    createUserWithEmailAndPassword 
+} from "firebase/auth";
 import "./iniciarSesion.css";
 
 export const IniciarSesion = () => {
+    const [isRegistering, setIsRegistering] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+
     const entrarConGooogle = async () => {
         try {
+            setLoading(true);
+            setError(null);
             const provider = new GoogleAuthProvider();
             await signInWithPopup(auth, provider);
             window.location.href = '/panel';
-        } catch (error) {
-            console.error(error);
+        } catch (err: unknown) {
+            console.error(err);
+            setError("Error al iniciar sesión con Google.");
+            setLoading(false);
         }
+    };
+
+    const handleEmailAuth = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
+        setLoading(true);
+
+        try {
+            if (isRegistering) {
+                await createUserWithEmailAndPassword(auth, email, password);
+            } else {
+                await signInWithEmailAndPassword(auth, email, password);
+            }
+            window.location.href = '/panel';
+        } catch (err: unknown) {
+            console.error(err);
+            const errorObj = err as { code?: string };
+            let msg = "Ocurrió un error en la autenticación.";
+            if (errorObj.code === 'auth/invalid-credential' || errorObj.code === 'auth/wrong-password' || errorObj.code === 'auth/user-not-found') {
+                msg = "Correo o contraseña incorrectos.";
+            } else if (errorObj.code === 'auth/email-already-in-use') {
+                msg = "Este correo electrónico ya está registrado.";
+            } else if (errorObj.code === 'auth/weak-password') {
+                msg = "La contraseña debe tener al menos 6 caracteres.";
+            } else if (errorObj.code === 'auth/invalid-email') {
+                msg = "El formato del correo electrónico no es válido.";
+            }
+            setError(msg);
+            setLoading(false);
+        }
+    };
+
+    const scrollToAuth = () => {
+        document.querySelector('.hero-cta-box')?.scrollIntoView({ behavior: 'smooth' });
     };
 
     return (
@@ -28,7 +79,7 @@ export const IniciarSesion = () => {
                     <a href="https://clikea.vercel.app" target="_blank" rel="noopener noreferrer" className="nav-social-link web">Visitar Clikea</a>
                 </nav>
                 <div className="landing-nav-actions">
-                    <button className="landing-login-btn" onClick={entrarConGooogle}>
+                    <button className="landing-login-btn" onClick={scrollToAuth}>
                         Acceso Profesional
                     </button>
                 </div>
@@ -48,15 +99,80 @@ export const IniciarSesion = () => {
                     </p>
                     
                     <div className="hero-cta-box">
-                        <button className="google-signin-btn" onClick={entrarConGooogle}>
+                        <div className="auth-mode-tabs">
+                            <button 
+                                type="button" 
+                                className={`auth-tab ${!isRegistering ? 'active' : ''}`}
+                                onClick={() => { setIsRegistering(false); setError(null); }}
+                            >
+                                Iniciar Sesión
+                            </button>
+                            <button 
+                                type="button" 
+                                className={`auth-tab ${isRegistering ? 'active' : ''}`}
+                                onClick={() => { setIsRegistering(true); setError(null); }}
+                            >
+                                Crear Cuenta
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleEmailAuth} className="email-auth-form">
+                            {error && <div className="auth-error-banner">{error}</div>}
+                            <div className="form-group">
+                                <input 
+                                    type="email" 
+                                    placeholder="Correo electrónico" 
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required 
+                                />
+                            </div>
+                            <div className="form-group password-group">
+                                <input 
+                                    type={showPassword ? "text" : "password"} 
+                                    placeholder="Contraseña (mín. 6 caracteres)" 
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required 
+                                />
+                                <button 
+                                    type="button" 
+                                    className="toggle-password-btn" 
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    title={showPassword ? "Ocultar contraseña" : "Ver contraseña"}
+                                >
+                                    {showPassword ? (
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                                        </svg>
+                                    ) : (
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                    )}
+                                </button>
+                            </div>
+                            <button type="submit" className="email-submit-btn" disabled={loading}>
+                                {loading ? 'Procesando...' : (isRegistering ? 'Registrarse con Email' : 'Iniciar Sesión con Email')}
+                            </button>
+                        </form>
+
+                        <div className="auth-divider">
+                            <span>o</span>
+                        </div>
+
+                        <button className="google-signin-btn" onClick={entrarConGooogle} disabled={loading}>
                             <svg className="google-icon" viewBox="0 0 24 24" width="22" height="22">
                                 <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
                                 <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.19v3.15C3.17 21.32 7.23 24 12 24z"/>
                                 <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.19C.43 8.11 0 9.81 0 12s.43 3.89 1.19 5.42l4.09-3.15z"/>
                                 <path fill="#EA4335" d="M12 4.75c1.76 0 3.34.61 4.58 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.17 2.68 1.19 6.58l4.09 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
                             </svg>
-                            Acceder con Cuenta Google
+                            {isRegistering ? 'Registrarse con Google' : 'Acceder con Cuenta Google'}
                         </button>
+
                         <div className="hero-guarantees">
                             <span>Sin costes ocultos</span>
                             <span>Alta instantánea en 2 minutos</span>
