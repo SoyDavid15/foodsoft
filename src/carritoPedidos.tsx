@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { formatPrecio } from "./firebase";
 
 interface Producto {
     id_doc: string;
@@ -44,7 +45,7 @@ const CarritoPedidos: React.FC<CarritoProps> = ({ cart, onClose, onUpdateQuantit
                                 <li key={item.product.id_doc} className="cart-item">
                                     <div className="cart-item-info">
                                         <strong>{item.product.nombre}</strong>
-                                        <span className="cart-item-unit-price">${item.product.precio.toFixed(2)} c/u</span>
+                                         <span className="cart-item-unit-price">${formatPrecio(item.product.precio)} c/u</span>
                                     </div>
                                     <div className="cart-item-actions">
                                         <div className="quantity-controls">
@@ -62,9 +63,9 @@ const CarritoPedidos: React.FC<CarritoProps> = ({ cart, onClose, onUpdateQuantit
                                                 +
                                             </button>
                                         </div>
-                                        <span className="cart-item-subtotal">
-                                            ${(item.product.precio * item.quantity).toFixed(2)}
-                                        </span>
+                                         <span className="cart-item-subtotal">
+                                             ${formatPrecio(item.product.precio * item.quantity)}
+                                         </span>
                                     </div>
                                 </li>
                             ))}
@@ -72,7 +73,7 @@ const CarritoPedidos: React.FC<CarritoProps> = ({ cart, onClose, onUpdateQuantit
                         <div className="cart-footer">
                             <div className="cart-total">
                                 <span>Total a pagar:</span>
-                                <strong>${total.toFixed(2)}</strong>
+                                 <strong>${formatPrecio(total)}</strong>
                             </div>
                             <div className="note-input-container">
                                 <input

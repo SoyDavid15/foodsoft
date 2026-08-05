@@ -1,4 +1,4 @@
-import { db, getActiveUsuarioId } from './firebase';
+import { db, getActiveUsuarioId, parsePrecio, formatPrecio } from './firebase';
 import { useState, useEffect } from 'react';
 import { collection, addDoc, onSnapshot, query, deleteDoc, doc, where, updateDoc } from "firebase/firestore";
 import './menu.css';
@@ -120,7 +120,7 @@ export const Menu = ({}: Props) => {
             return;
         }
 
-        const precioNum = parseFloat(nuevoPrecio);
+        const precioNum = parsePrecio(nuevoPrecio);
         if (isNaN(precioNum) || precioNum <= 0) {
             setStatus("El precio debe ser un número válido y mayor a 0");
             return;
@@ -219,7 +219,7 @@ export const Menu = ({}: Props) => {
             return;
         }
 
-        const precioNum = parseFloat(editPrecio);
+        const precioNum = parsePrecio(editPrecio);
         if (isNaN(precioNum) || precioNum <= 0) {
             setStatus("El precio debe ser un número válido y mayor a 0");
             return;
@@ -359,7 +359,7 @@ export const Menu = ({}: Props) => {
                                 )}
                                 <h3 className='menu-card-title'>{producto.nombre}</h3>
                                 <p className='menu-card-info'>ID: {producto.id}</p>
-                                <p className='menu-card-price'>${producto.precio.toFixed(2)}</p>
+                                 <p className='menu-card-price'>${formatPrecio(producto.precio)}</p>
                                 <p className='menu-card-description'>{producto.descripcion}</p>
                                 <div className="menu-card-actions">
                                     <button className='menu-card-btn edit' onClick={() => iniciarEdicion(producto)}>Editar</button>

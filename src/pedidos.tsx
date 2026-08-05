@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { db, getActiveUsuarioId } from "./firebase";
+import { db, getActiveUsuarioId, formatPrecio } from "./firebase";
 import { collection, query, where, onSnapshot, doc, updateDoc, deleteDoc, writeBatch, getDocs } from "firebase/firestore";
 import { QRCodeCanvas } from "qrcode.react";
 import "./pedidos.css";
@@ -155,14 +155,14 @@ export const Pedidos = ({ mesa }: { mesa: Mesa | null }) => {
                         ${order.items.map(i => `
                             <div class="item-row">
                                 <span>${(i as any).cantidad || 1}x ${i.nombre}</span>
-                                <span>$${((i.precio) * ((i as any).cantidad || 1)).toFixed(2)}</span>
+                                 <span>$${formatPrecio((i.precio) * ((i as any).cantidad || 1))}</span>
                             </div>
                         `).join('')}
                     </div>
                     <div class="divider"></div>
                     <div class="total-row">
                         <span>TOTAL:</span>
-                        <span>$${order.total.toFixed(2)}</span>
+                        <span>$${formatPrecio(order.total)}</span>
                     </div>
                     ${order.nota ? `<p><strong>Nota:</strong> ${order.nota}</p>` : ''}
                     <div class="divider"></div>
@@ -390,12 +390,12 @@ export const Pedidos = ({ mesa }: { mesa: Mesa | null }) => {
                                                              {order.items.map((item, idx) => (
                                                                  <div key={idx} className="order-item-row">
                                                                      <span>{(item as any).cantidad || 1}x {item.nombre}</span>
-                                                                     <span>${(item.precio * ((item as any).cantidad || 1)).toFixed(2)}</span>
+                                                                     <span>${formatPrecio(item.precio * ((item as any).cantidad || 1))}</span>
                                                                  </div>
                                                              ))}
                                                         </div>
                                                         <div className="order-total">
-                                                            <strong>Total: ${order.total.toFixed(2)}</strong>
+                                                            <strong>Total: ${formatPrecio(order.total)}</strong>
                                                             <span className={`status-badge ${order.estado}`}>
                                                                 {order.estado.toUpperCase()}
                                                             </span>

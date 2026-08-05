@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { db } from "./firebase";
+import { db, formatPrecio } from "./firebase";
 import { collection, onSnapshot, query, where, addDoc } from "firebase/firestore";
 import CarritoPedidos, { type CartItem } from "./carritoPedidos";
 import "./hacerPedido.css";
@@ -192,7 +192,7 @@ export const HacerPedido = () => {
                                 <div className="menu-item-content">
                                     <div className="menu-item-header">
                                         <strong>{producto.nombre}</strong>
-                                        <span className="menu-item-price">${producto.precio.toFixed(2)}</span>
+                                         <span className="menu-item-price">${formatPrecio(producto.precio)}</span>
                                     </div>
                                     <span className="menu-item-description">{producto.descripcion}</span>
                                 </div>

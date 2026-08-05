@@ -1,4 +1,4 @@
-import { db, getActiveUsuarioId } from './firebase';
+import { db, getActiveUsuarioId, parsePrecio, formatPrecio } from './firebase';
 import { useState, useEffect } from 'react';
 import { collection, addDoc, onSnapshot, query, deleteDoc, doc, where, updateDoc } from "firebase/firestore";
 import './inventario.css';
@@ -71,7 +71,7 @@ export const Inventario = ({}: Props) => {
         }
 
         const cantidadNum = parseFloat(nuevaCantidad);
-        const costoNum = parseFloat(nuevoCosto);
+        const costoNum = parsePrecio(nuevoCosto);
         const stockMinimoNum = stockMinimo ? parseFloat(stockMinimo) : 0;
 
         if (isNaN(cantidadNum) || cantidadNum < 0) {
@@ -457,11 +457,11 @@ export const Inventario = ({}: Props) => {
                                     </div>
                                     <div className="detail-row">
                                         <span className="detail-label">Costo Unitario</span>
-                                        <span className="detail-value">${item.costo.toFixed(2)}</span>
+                                         <span className="detail-value">${formatPrecio(item.costo)}</span>
                                     </div>
                                     <div className="detail-row">
                                         <span className="detail-label">Costo Total en Stock</span>
-                                        <span className="detail-value total">${costoTotal.toFixed(2)}</span>
+                                         <span className="detail-value total">${formatPrecio(costoTotal)}</span>
                                     </div>
                                     <div className="detail-row">
                                         <span className="detail-label">Categoría</span>
@@ -537,8 +537,8 @@ export const Inventario = ({}: Props) => {
                                                 </div>
                                             )}
                                         </td>
-                                        <td>${item.costo.toFixed(2)}</td>
-                                        <td><strong>${costoTotal.toFixed(2)}</strong></td>
+                                        <td>${formatPrecio(item.costo)}</td>
+                                        <td><strong>${formatPrecio(costoTotal)}</strong></td>
                                         <td>
                                             <span className={`stock-badge ${estado.clase}`}>{estado.texto}</span>
                                         </td>

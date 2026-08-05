@@ -39,3 +39,19 @@ export const getActiveSession = () => {
         return null;
     }
 };
+
+export const parsePrecio = (val: string): number => {
+    if (!val) return NaN;
+    let clean = val.trim();
+    if (/^\d{1,3}(\.\d{3})+$/.test(clean)) {
+        clean = clean.replace(/\./g, '');
+    } else if (clean.includes(',') && !clean.includes('.')) {
+        clean = clean.replace(/\./g, '').replace(',', '.');
+    }
+    return parseFloat(clean);
+};
+
+export const formatPrecio = (valor: number): string => {
+    if (isNaN(valor)) return "0";
+    return Number.isInteger(valor) ? valor.toString() : valor.toFixed(2);
+};
